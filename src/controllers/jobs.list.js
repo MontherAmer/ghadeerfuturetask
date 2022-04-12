@@ -17,13 +17,8 @@ exports.listJobs = async (req, res) => {
 
     let total = await Job.countDocuments(query);
 
-    return res.send({
-      isSuccess: true,
-      status: 200,
-      data: { list, total },
-    });
+    return res.send({ isSuccess: true, status: 200, data: { list, total } });
   } catch (err) {
-    console.log('err ', err);
     return res.send({ isSuccess: false, status: 500 });
   }
 };

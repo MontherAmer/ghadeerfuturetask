@@ -1,8 +1,10 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 
-require('dotenv').config();
+const apis = require('./router');
 
 const { insertDocumentsInDataBase } = require('./utils/fill-database');
 
@@ -18,6 +20,11 @@ db.once('open', () => {
   console.log('connected to database successfully');
   insertDocumentsInDataBase();
 });
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use('/apis', apis);
 
 app.listen(process.env.PORT, () => {
   console.log(`App listening on port ${process.env.PORT}`);

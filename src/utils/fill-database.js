@@ -8,7 +8,6 @@ exports.insertDocumentsInDataBase = async () => {
     await Country.insertMany(countries);
     await Sector.insertMany(sectors);
     await Job.insertMany(jobs());
-    console.log('should add to data base');
   }
   return;
 };
