@@ -70,3 +70,29 @@ body {
   margin: 5px;
   cursor: pointer;
 }
+
+.search-container {
+  display: flex;
+  /* justify-content: space-between; */
+}
+
+.search-container > input[type='text'] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 4px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.search-container > button {
+  width: 132px;
+  height: 42px;
+  margin: 8px 0;
+  cursor: pointer;
+  background-color: #2196f3;
+  color: #fff;
+  border: 2px solid #6eaee2;
+  font-weight: 700;
+}

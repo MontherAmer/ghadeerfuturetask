@@ -2085,6 +2085,7 @@ const axios = require('axios');
 
 const { appendSectorsToScreen, appendCountriesToScreen } = require('./lookups');
 const { handlePaginateUI } = require('./pagination');
+const { processChange } = require('./search');
 
 let { initFilters, setSectors, setCountries } = require('./store');
 
@@ -2097,11 +2098,15 @@ const fetchLookups = async () => {
   appendCountriesToScreen();
 };
 
-fetchLookups();
-initFilters();
-handlePaginateUI(40, 1);
+window.onload = function () {
+  fetchLookups();
+  initFilters();
+  handlePaginateUI(40, 1);
+  let searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('keydown', (e) => processChange(e));
+};
 
-},{"./lookups":33,"./pagination":34,"./store":35,"axios":1}],33:[function(require,module,exports){
+},{"./lookups":33,"./pagination":34,"./search":35,"./store":36,"axios":1}],33:[function(require,module,exports){
 let { getCountries, getSectors, setFilters, setCities, getCities } = require('./store');
 
 const handleSectorChange = (e) => {
@@ -2172,7 +2177,7 @@ exports.appendCitiesToScreen = () => {
   });
 };
 
-},{"./store":35}],34:[function(require,module,exports){
+},{"./store":36}],34:[function(require,module,exports){
 const { setFilters, getFilters } = require('./store');
 
 // add color to active page
@@ -2213,7 +2218,31 @@ exports.handlePaginateUI = (total, active) => {
   });
 };
 
-},{"./store":35}],35:[function(require,module,exports){
+},{"./store":36}],35:[function(require,module,exports){
+const { setFilters, getFilters } = require('./store');
+
+const debounce = (func, timeout = 1000) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+};
+const handleSearchInput = (e) => {
+  let searchInput = e.target.value;
+  setFilters('title', searchInput);
+  console.log('ppppppppppppppp', searchInput);
+};
+exports.processChange = debounce((e) => handleSearchInput(e));
+
+// window.onload = function () {
+//   let searchInput = document.getElementById('search-input');
+//   searchInput.addEventListener('keydown', (e) => processChange(e));
+// };
+
+},{"./store":36}],36:[function(require,module,exports){
 exports.setCountries = (data) => localStorage.setItem('countries', JSON.stringify(data));
 
 exports.getCountries = () => JSON.parse(localStorage.getItem('countries'));

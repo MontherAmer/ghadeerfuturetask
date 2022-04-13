@@ -2,6 +2,7 @@ const axios = require('axios');
 
 const { appendSectorsToScreen, appendCountriesToScreen } = require('./lookups');
 const { handlePaginateUI } = require('./pagination');
+const { processChange } = require('./search');
 
 let { initFilters, setSectors, setCountries } = require('./store');
 
@@ -14,6 +15,10 @@ const fetchLookups = async () => {
   appendCountriesToScreen();
 };
 
-fetchLookups();
-initFilters();
-handlePaginateUI(40, 1);
+window.onload = function () {
+  fetchLookups();
+  initFilters();
+  handlePaginateUI(40, 1);
+  let searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('keydown', (e) => processChange(e));
+};
