@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+const cors = require('cors');
 
 const apis = require('./router');
 
@@ -21,6 +22,7 @@ db.once('open', () => {
   insertDocumentsInDataBase();
 });
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
