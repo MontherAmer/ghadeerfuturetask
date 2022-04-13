@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const { appendSectorsToScreen, appendCountriesToScreen } = require('./lookups');
 
-let { setSectors, setCountries } = require('./store');
+let { initFilters, setSectors, setCountries } = require('./store');
 
 // get countries, cities and sectors from backend
 const fetchLookups = async () => {
@@ -14,3 +14,4 @@ const fetchLookups = async () => {
 };
 
 fetchLookups();
+initFilters();

@@ -1,17 +1,16 @@
-let { getCountries, getSectors } = require('./store');
+let { getCountries, getSectors, setFilters, setCities, getCities } = require('./store');
 
 const handleSectorChange = (e) => {
-  console.log(e.target.name);
+  setFilters('sector', e.target.name);
 };
 
 const handleCountryChange = (e) => {
-  console.log(e.target.name);
-  getCountries();
+  setFilters('country', e.target.name);
+  setCities();
+  this.appendCitiesToScreen();
 };
 
-const handleCityChange = (e) => {
-  console.log(e.target.name);
-};
+const handleCityChange = (e) => {};
 
 exports.appendSectorsToScreen = () => {
   let sectorsContainer = document.getElementById('sectors-container');
@@ -47,5 +46,24 @@ exports.appendCountriesToScreen = () => {
     countriesContainer.appendChild(newDiv);
     let country = document.getElementById(`country-${i}`);
     country.addEventListener('change', (e) => handleCountryChange(e));
+  });
+};
+
+exports.appendCitiesToScreen = () => {
+  let citiesContainer = document.getElementById('cities-container');
+  let cities = getCities();
+  citiesContainer.innerHTML = '';
+
+  cities.map((item, i) => {
+    let newDiv = document.createElement('div');
+
+    newDiv.innerHTML = `
+        <label class="checkbox-container">${item}
+            <input type="checkbox"  id="cities-${i}" name="${item}"/>
+            <span class="checkbox-checkmark"></span>
+        </label>`;
+    citiesContainer.appendChild(newDiv);
+    let cities = document.getElementById(`cities-${i}`);
+    cities.addEventListener('change', (e) => handleCityChange(e));
   });
 };

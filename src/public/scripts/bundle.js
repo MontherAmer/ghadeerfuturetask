@@ -2085,7 +2085,7 @@ const axios = require('axios');
 
 const { appendSectorsToScreen, appendCountriesToScreen } = require('./lookups');
 
-let { setSectors, setCountries } = require('./store');
+let { initFilters, setSectors, setCountries } = require('./store');
 
 // get countries, cities and sectors from backend
 const fetchLookups = async () => {
@@ -2097,22 +2097,22 @@ const fetchLookups = async () => {
 };
 
 fetchLookups();
+initFilters();
 
 },{"./lookups":33,"./store":34,"axios":1}],33:[function(require,module,exports){
-let { getCountries, getSectors } = require('./store');
+let { getCountries, getSectors, setFilters, setCities, getCities } = require('./store');
 
 const handleSectorChange = (e) => {
-  console.log(e.target.name);
+  setFilters('sector', e.target.name);
 };
 
 const handleCountryChange = (e) => {
-  console.log(e.target.name);
-  getCountries();
+  setFilters('country', e.target.name);
+  setCities();
+  this.appendCitiesToScreen();
 };
 
-const handleCityChange = (e) => {
-  console.log(e.target.name);
-};
+const handleCityChange = (e) => {};
 
 exports.appendSectorsToScreen = () => {
   let sectorsContainer = document.getElementById('sectors-container');
@@ -2151,6 +2151,25 @@ exports.appendCountriesToScreen = () => {
   });
 };
 
+exports.appendCitiesToScreen = () => {
+  let citiesContainer = document.getElementById('cities-container');
+  let cities = getCities();
+  citiesContainer.innerHTML = '';
+
+  cities.map((item, i) => {
+    let newDiv = document.createElement('div');
+
+    newDiv.innerHTML = `
+        <label class="checkbox-container">${item}
+            <input type="checkbox"  id="cities-${i}" name="${item}"/>
+            <span class="checkbox-checkmark"></span>
+        </label>`;
+    citiesContainer.appendChild(newDiv);
+    let cities = document.getElementById(`cities-${i}`);
+    cities.addEventListener('change', (e) => handleCityChange(e));
+  });
+};
+
 },{"./store":34}],34:[function(require,module,exports){
 exports.setCountries = (data) => localStorage.setItem('countries', JSON.stringify(data));
 
@@ -2160,8 +2179,51 @@ exports.setSectors = (data) => localStorage.setItem('sectors', JSON.stringify(da
 
 exports.getSectors = () => JSON.parse(localStorage.getItem('sectors'));
 
-exports.setCities = (data) => localStorage.setItem('cities', JSON.stringify(data));
+exports.setCities = () => {
+  let countries = this.getCountries();
+  let cities = [];
+  console.log(countries);
+  countries.map((item) => {
+    if (this.getFilters().country.includes(item.name)) {
+      item.cities.map((city) => cities.push(city));
+    }
+  });
+  console.log('CCCCCCC ', cities);
+  localStorage.setItem('cities', JSON.stringify(cities));
+};
 
 exports.getCities = () => JSON.parse(localStorage.getItem('cities'));
+
+exports.initFilters = () => {
+  localStorage.setItem(
+    'filters',
+    JSON.stringify({
+      page: 1,
+      title: '',
+      country: [],
+      city: [],
+      sector: [],
+    })
+  );
+};
+
+exports.setFilters = (name, value) => {
+  let filters = JSON.parse(localStorage.getItem('filters'));
+
+  // handle sector, country and city
+  if (Array.isArray(filters[name])) {
+    if (filters[name].includes(value)) {
+      filters[name] = filters[name].filter((item) => item != value);
+    } else {
+      let temp = filters[name];
+      temp.push(value);
+      filters[name] = temp;
+    }
+  }
+
+  localStorage.setItem('filters', JSON.stringify(filters));
+};
+
+exports.getFilters = () => JSON.parse(localStorage.getItem('filters'));
 
 },{}]},{},[32]);
