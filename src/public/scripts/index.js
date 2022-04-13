@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 const { appendSectorsToScreen, appendCountriesToScreen } = require('./lookups');
+const { handlePaginateUI } = require('./pagination');
 
 let { initFilters, setSectors, setCountries } = require('./store');
 
@@ -15,3 +16,4 @@ const fetchLookups = async () => {
 
 fetchLookups();
 initFilters();
+handlePaginateUI(40, 1);

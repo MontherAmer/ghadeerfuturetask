@@ -1,0 +1,27 @@
+#paginate {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  /* padding: 24px 0px; */
+  height: 60px;
+  align-items: center;
+}
+
+.page {
+  border: 2px solid #2196f3;
+  border-radius: 5px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #2196f3;
+  font-weight: bold;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.page.active {
+  color: #fff;
+  background-color: #2196f3;
+}

@@ -46,6 +46,8 @@ exports.setFilters = (name, value) => {
       temp.push(value);
       filters[name] = temp;
     }
+  } else {
+    filters[name] = value;
   }
 
   localStorage.setItem('filters', JSON.stringify(filters));
