@@ -4,17 +4,22 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "axios": "^0.26.1",
     "browserify": "^17.0.0",
+    "concurrently": "^7.1.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "mongoose": "^6.2.10"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "watchify": "^4.0.0"
   },
   "scripts": {
     "start": "node src/index.js",
-    "start:dev": "nodemon src/index.js",
+    "start:dev2": "nodemon src/index.js",
+    "start:dev": "concurrently \"nodemon src/index.js\" \"watchify src/public/scripts/index.js -o src/public/scripts/bundle.js\"",
     "build": "browserify src/public/scripts/index.js > src/public/scripts/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
