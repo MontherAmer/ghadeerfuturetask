@@ -2085,52 +2085,83 @@ const axios = require('axios');
 
 const { appendSectorsToScreen, appendCountriesToScreen } = require('./lookups');
 
-let countries = [];
-let sectors = [];
-let cities = [];
+let { setSectors, setCountries } = require('./store');
 
+// get countries, cities and sectors from backend
 const fetchLookups = async () => {
   let { data } = await axios.get('http://localhost:5000/apis/lookups');
-  console.log('ddddddddd ', data.data.countries);
-  countries = data.data.countries || [];
-  sectors = data.data.sectors || [];
-  appendSectorsToScreen(sectors);
-  appendCountriesToScreen(countries);
+  setCountries(data.data.countries || []);
+  setSectors(data.data.sectors || []);
+  appendSectorsToScreen();
+  appendCountriesToScreen();
 };
 
 fetchLookups();
 
-},{"./lookups":33,"axios":1}],33:[function(require,module,exports){
-exports.appendSectorsToScreen = (sectors) => {
-  let sectorsContainer = document.getElementById('sectors-container');
+},{"./lookups":33,"./store":34,"axios":1}],33:[function(require,module,exports){
+let { getCountries, getSectors } = require('./store');
 
-  sectors.map((item) => {
+const handleSectorChange = (e) => {
+  console.log(e.target.name);
+};
+
+const handleCountryChange = (e) => {
+  console.log(e.target.name);
+  getCountries();
+};
+
+const handleCityChange = (e) => {
+  console.log(e.target.name);
+};
+
+exports.appendSectorsToScreen = () => {
+  let sectorsContainer = document.getElementById('sectors-container');
+  let sectors = getSectors();
+  sectors.map((item, i) => {
     let newDiv = document.createElement('div');
 
     newDiv.innerHTML = `
       <label class="checkbox-container">${item.name}
-          <input type="checkbox" id="checkbox" />
+          <input type="checkbox" id="sector-${i}" name="${item.name}"/>
           <span class="checkbox-checkmark"></span>
       </label>`;
 
     sectorsContainer.appendChild(newDiv);
+    let sector = document.getElementById(`sector-${i}`);
+    sector.addEventListener('change', (e) => handleSectorChange(e));
   });
 };
 
-exports.appendCountriesToScreen = (countries) => {
+exports.appendCountriesToScreen = () => {
   let countriesContainer = document.getElementById('countries-container');
+  let countries = getCountries();
 
-  countries.map((item) => {
+  countries.map((item, i) => {
     let newDiv = document.createElement('div');
 
     newDiv.innerHTML = `
         <label class="checkbox-container">${item.name}
-            <input type="checkbox" id="checkbox" />
+            <input type="checkbox"  id="country-${i}" name="${item.name}"/>
             <span class="checkbox-checkmark"></span>
         </label>`;
 
     countriesContainer.appendChild(newDiv);
+    let country = document.getElementById(`country-${i}`);
+    country.addEventListener('change', (e) => handleCountryChange(e));
   });
 };
+
+},{"./store":34}],34:[function(require,module,exports){
+exports.setCountries = (data) => localStorage.setItem('countries', JSON.stringify(data));
+
+exports.getCountries = () => JSON.parse(localStorage.getItem('countries'));
+
+exports.setSectors = (data) => localStorage.setItem('sectors', JSON.stringify(data));
+
+exports.getSectors = () => JSON.parse(localStorage.getItem('sectors'));
+
+exports.setCities = (data) => localStorage.setItem('cities', JSON.stringify(data));
+
+exports.getCities = () => JSON.parse(localStorage.getItem('cities'));
 
 },{}]},{},[32]);
