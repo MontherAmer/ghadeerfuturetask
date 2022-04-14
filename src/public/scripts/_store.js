@@ -52,3 +52,7 @@ exports.getScreenWidth = () => {
   let body = document.getElementsByTagName('body')[0];
   return body.clientWidth;
 };
+
+exports.setCurrentJob = (id) => localStorage.setItem('job-id', id);
+
+exports.getCurrentJob = () => localStorage.getItem('job-id');

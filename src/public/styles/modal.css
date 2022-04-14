@@ -65,6 +65,18 @@
   border-radius: 8px;
 }
 
+.modal-submit.delete {
+  width: 120px;
+  height: 40px;
+  margin-left: 8px;
+  cursor: pointer;
+  background-color: #ff0000;
+  color: #fff;
+  border: 2px solid #ff0000;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
 .modal-details-first-row {
   display: flex;
 }

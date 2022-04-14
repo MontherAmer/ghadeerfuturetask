@@ -1,5 +1,5 @@
 const Axios = require('axios');
-const { setFilters, getFilters, setJobs, getJobs } = require('./_store');
+const { setFilters, getFilters, setJobs, getJobs, setCurrentJob, getCurrentJob } = require('./_store');
 
 const debounce = (func, timeout = 1000) => {
   let timer;
@@ -15,6 +15,8 @@ const handleSearchInput = (e) => {
   setFilters('title', searchInput);
   this.getListOfJobs();
 };
+
+exports.processChange = debounce((e) => handleSearchInput(e));
 
 const changeActivePage = (prev, next) => {
   let prevPage = document.getElementById(`page${prev}`);
@@ -55,6 +57,7 @@ const handlePaginateUI = (active) => {
 
 const appendCardToScreen = () => {
   let cardsContainer = document.getElementById('cards-container');
+  cardsContainer.innerHTML = '';
   let jobs = getJobs().list;
   jobs.map((item, i) => {
     let newDiv = document.createElement('div');
@@ -70,17 +73,17 @@ const appendCardToScreen = () => {
       </div>
       <div class="actions">
         <img class="action-icon" src="./images/eye.png" id='details-icon-${i}'/>
-        <img class="action-icon" src="./images/trash.png" />
+        <img class="action-icon" src="./images/trash.png" id='delete-icon-${i}'/>
       </div>
     </div>`;
 
     cardsContainer.appendChild(newDiv);
     let detailsIcon = document.getElementById(`details-icon-${i}`);
     detailsIcon.addEventListener('click', () => showDetailsModal(item));
+    let deleteIcon = document.getElementById(`delete-icon-${i}`);
+    deleteIcon.addEventListener('click', () => showDeleteModal(item));
   });
 };
-
-exports.processChange = debounce((e) => handleSearchInput(e));
 
 exports.getListOfJobs = async () => {
   let filters = getFilters();
@@ -90,8 +93,33 @@ exports.getListOfJobs = async () => {
   appendCardToScreen();
 };
 
+const submitDeleteJob = async () => {
+  let id = getCurrentJob();
+  await Axios.delete(`http://localhost:5000/apis/jobs/${id}`);
+  let jobs = getJobs();
+  jobs = { ...jobs, list: jobs.list.filter((job) => job._id !== id), total: jobs.total - 1 };
+  setJobs(jobs);
+  appendCardToScreen();
+  this.closeModal({ target: { id: 'delete-modal-close' } });
+};
+
+const showDeleteModal = (item) => {
+  setCurrentJob(item._id);
+  let modal = document.getElementById('delete-modal');
+  let modalBody = document.getElementById('delete-modal-body');
+  modalBody.innerHTML = '';
+  let newDiv = document.createElement('div');
+
+  newDiv.innerHTML = `
+  <p> Are you sure you want to delete <strong>${item.title}</strong> Job</p>
+  `;
+
+  modalBody.appendChild(newDiv);
+
+  modal.style.display = 'block';
+};
+
 const showDetailsModal = (item) => {
-  console.log(item);
   let modal = document.getElementById('details-modal');
   let modalBody = document.getElementById('details-modal-body');
   modalBody.innerHTML = '';
@@ -119,7 +147,6 @@ const showDetailsModal = (item) => {
 };
 
 exports.closeModal = (e) => {
-  console.log(e.target.id);
   let modals = ['details-modal', 'create-modal', 'delete-modal'];
   let modalsClose = ['details-modal-close', 'create-modal-close', 'delete-modal-close'];
 
@@ -132,4 +159,6 @@ exports.closeModal = (e) => {
     let modal = document.getElementById(e.target.id.slice(0, -6));
     modal.style.display = 'none';
   }
+
+  if (e.target.id === 'delete-modal-submit') submitDeleteJob();
 };
