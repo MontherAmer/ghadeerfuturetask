@@ -7,11 +7,13 @@
     <link rel="stylesheet" href="./styles/index.css" />
     <link rel="stylesheet" href="./styles/checkbox.css" />
     <link rel="stylesheet" href="./styles/pagination.css" />
+    <link rel="stylesheet" href="./styles/modal.css" />
     <title>Ghadeer Future</title>
   </head>
   <body>
     <div class="wrapper">
       <div class="container">
+        <!-- Filters section start-->
         <div class="filters">
           <div class="filters-group">
             <h1>Sector:</h1>
@@ -26,116 +28,64 @@
             <div id="cities-container"></div>
           </div>
         </div>
+        <!-- Filters section end-->
+
+        <!-- Cards section start -->
         <div>
           <div class="search-container">
             <input type="text" id="search-input" />
             <button>Add New Job</button>
           </div>
-
-          <div id="cards-container">
-            <!-- <div class="card">
-              <img class="card-image" src="./images/download.png" />
-              <div class="description">
-                <p class="desc-title">Title</p>
-                <p class="desc-loc">City,Country</p>
-                <p class="desc-sector">sector</p>
-                <p class="desc-desc">sector</p>
-              </div>
-              <div class="actions">
-                <img class="action-icon" src="./images/eye.png" />
-                <img class="action-icon" src="./images/trash.png" />
-              </div>
-            </div>
-
-            <div class="card">
-              <img class="card-image" src="./images/download.png" />
-              <div class="description">
-                <p class="desc-title">Title</p>
-                <p class="desc-loc">City,Country</p>
-                <p class="desc-sector">sector</p>
-                <p class="desc-desc">sector</p>
-              </div>
-              <div class="actions">
-                <img class="action-icon" src="./images/eye.png" />
-                <img class="action-icon" src="./images/trash.png" />
-              </div>
-            </div>
-
-            <div class="card">
-              <img class="card-image" src="./images/download.png" />
-              <div class="description">
-                <p class="desc-title">Title</p>
-                <p class="desc-loc">City,Country</p>
-                <p class="desc-sector">sector</p>
-                <p class="desc-desc">sector</p>
-              </div>
-              <div class="actions">
-                <img class="action-icon" src="./images/eye.png" />
-                <img class="action-icon" src="./images/trash.png" />
-              </div>
-            </div>
-
-            <div class="card">
-              <img class="card-image" src="./images/download.png" />
-              <div class="description">
-                <p class="desc-title">Title</p>
-                <p class="desc-loc">City,Country</p>
-                <p class="desc-sector">sector</p>
-                <p class="desc-desc">sector</p>
-              </div>
-              <div class="actions">
-                <img class="action-icon" src="./images/eye.png" />
-                <img class="action-icon" src="./images/trash.png" />
-              </div>
-            </div>
-
-            <div class="card">
-              <img class="card-image" src="./images/download.png" />
-              <div class="description">
-                <p class="desc-title">Title</p>
-                <p class="desc-loc">City,Country</p>
-                <p class="desc-sector">sector</p>
-                <p class="desc-desc">sector</p>
-              </div>
-              <div class="actions">
-                <img class="action-icon" src="./images/eye.png" />
-                <img class="action-icon" src="./images/trash.png" />
-              </div>
-            </div>
-
-            <div class="card">
-              <img class="card-image" src="./images/download.png" />
-              <div class="description">
-                <p class="desc-title">Title</p>
-                <p class="desc-loc">City,Country</p>
-                <p class="desc-sector">sector</p>
-                <p class="desc-desc">sector</p>
-              </div>
-              <div class="actions">
-                <img class="action-icon" src="./images/eye.png" />
-                <img class="action-icon" src="./images/trash.png" />
-              </div>
-            </div>
-
-            <div class="card">
-              <img class="card-image" src="./images/download.png" />
-              <div class="description">
-                <p class="desc-title">Title</p>
-                <p class="desc-loc">City,Country</p>
-                <p class="desc-sector">sector</p>
-                <p class="desc-desc">sector</p>
-              </div>
-              <div class="actions">
-                <img class="action-icon" src="./images/eye.png" />
-                <img class="action-icon" src="./images/trash.png" />
-              </div>
-            </div> -->
-          </div>
-
+          <div id="cards-container"></div>
           <div id="paginate"></div>
+        </div>
+        <!-- Cards section end -->
+      </div>
+
+      <!-- Details Modal section start -->
+      <div id="details-modal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1>Add New Job Post</h1>
+          </div>
+          <div class="modal-body" id="details-modal-body"></div>
+          <div class="modal-footer">
+            <button class="modal-close" id="details-modal-close">Close</button>
+          </div>
         </div>
       </div>
     </div>
+
+      <!-- Create Modal section start -->
+      <div id="create-modal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1>Add New Job Post</h1>
+          </div>
+          <div class="modal-body">body</div>
+          <div class="modal-footer">
+            <button class="modal-close">Close</button>
+            <button class="modal-submit">Add New Jop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Modal section start -->
+    <div id="delete-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>Add New Job Post</h1>
+        </div>
+        <div class="modal-body"></div>
+        <div class="modal-footer">
+          <button class="modal-close">Close</button>
+          <button class="modal-submit">Add New Jop</button>
+        </div>
+      </div>
+     </div>
+    </div>
+
 
     <script src="./scripts/bundle.js"></script>
   </body>

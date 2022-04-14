@@ -2240,14 +2240,14 @@ const appendCardToScreen = () => {
         <p class="desc-desc">${item.description.slice(0, 100)}...</p>
       </div>
       <div class="actions">
-        <img class="action-icon" src="./images/eye.png" />
+        <img class="action-icon" src="./images/eye.png" id='details-icon-${i}'/>
         <img class="action-icon" src="./images/trash.png" />
       </div>
     </div>`;
 
     cardsContainer.appendChild(newDiv);
-    // let job = document.getElementById(`job-${i}`);
-    // job.addEventListener('change', (e) => handleSectorChange(e));
+    let detailsIcon = document.getElementById(`details-icon-${i}`);
+    detailsIcon.addEventListener('click', () => showDetailsModal(item));
   });
 };
 
@@ -2259,6 +2259,50 @@ exports.getListOfJobs = async () => {
   setJobs(data.data.data);
   handlePaginateUI(1);
   appendCardToScreen();
+};
+
+const showDetailsModal = (item) => {
+  console.log(item);
+  let modal = document.getElementById('details-modal');
+  let modalBody = document.getElementById('details-modal-body');
+  modalBody.innerHTML = '';
+  let newDiv = document.createElement('div');
+
+  newDiv.innerHTML = `
+  <div class="modal-details-first-row">
+  <div>
+    <p> <strong>Job Title: </strong> ${item.title} </p>
+    <p> <strong>Job Sector: </strong> ${item.sector} </p>
+    <p> <strong>Job Location: </strong> ${item.city}, ${item.country} </p>
+    <p> 
+      <strong>Job Description: </strong>
+       ${item.description}
+    </p>
+  </div>
+  <div>
+    <img src="./images/download.png" />
+  </div>
+</div>`;
+
+  modalBody.appendChild(newDiv);
+
+  modal.style.display = 'block';
+};
+
+exports.closeModal = (e) => {
+  console.log(e.target.id);
+  let modals = ['details-modal', 'create-modal', 'delete-modal'];
+  let modalsClose = ['details-modal-close', 'create-modal-close', 'delete-modal-close'];
+
+  if (modals.includes(e.target.id)) {
+    let modal = document.getElementById(e.target.id);
+    modal.style.display = 'none';
+  }
+
+  if (modalsClose.includes(e.target.id)) {
+    let modal = document.getElementById(e.target.id.slice(0, -6));
+    modal.style.display = 'none';
+  }
 };
 
 },{"./_store":34,"axios":1}],34:[function(require,module,exports){
@@ -2320,7 +2364,7 @@ exports.getScreenWidth = () => {
 },{}],35:[function(require,module,exports){
 const { fetchLookups } = require('./_lookups');
 
-const { processChange, getListOfJobs } = require('./_main');
+const { processChange, getListOfJobs, closeModal } = require('./_main');
 
 let { initFilters } = require('./_store');
 
@@ -2332,11 +2376,15 @@ window.onload = async function () {
   searchInput.addEventListener('keydown', (e) => processChange(e));
 };
 
-function reportWindowSize() {
+const reportWindowSize = () => {
   let body = document.getElementsByTagName('body')[0];
   console.log('ddddddd ', body.clientWidth);
-}
+};
 
 window.onresize = reportWindowSize;
+
+window.onclick = (e) => closeModal(e);
+// details-modal-close
+document.addEventListener('click', (e) => closeModal(e));
 
 },{"./_lookups":32,"./_main":33,"./_store":34}]},{},[35]);
