@@ -1,18 +1,26 @@
-let { getCountries, getSectors, setFilters, setCities, getCities } = require('./store');
+const Axios = require('axios');
+
+const { getListOfJobs } = require('./_main');
+let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, setSectors } = require('./_store');
 
 const handleSectorChange = (e) => {
   setFilters('sector', e.target.name);
+  getListOfJobs();
 };
 
 const handleCountryChange = (e) => {
   setFilters('country', e.target.name);
   setCities();
-  this.appendCitiesToScreen();
+  appendCitiesToScreen();
+  getListOfJobs();
 };
 
-const handleCityChange = (e) => {};
+const handleCityChange = (e) => {
+  setFilters('city', e.target.name);
+  getListOfJobs();
+};
 
-exports.appendSectorsToScreen = () => {
+const appendSectorsToScreen = () => {
   let sectorsContainer = document.getElementById('sectors-container');
   let sectors = getSectors();
   sectors.map((item, i) => {
@@ -30,7 +38,7 @@ exports.appendSectorsToScreen = () => {
   });
 };
 
-exports.appendCountriesToScreen = () => {
+const appendCountriesToScreen = () => {
   let countriesContainer = document.getElementById('countries-container');
   let countries = getCountries();
 
@@ -49,7 +57,7 @@ exports.appendCountriesToScreen = () => {
   });
 };
 
-exports.appendCitiesToScreen = () => {
+const appendCitiesToScreen = () => {
   let citiesContainer = document.getElementById('cities-container');
   let cities = getCities();
   citiesContainer.innerHTML = '';
@@ -66,4 +74,12 @@ exports.appendCitiesToScreen = () => {
     let cities = document.getElementById(`cities-${i}`);
     cities.addEventListener('change', (e) => handleCityChange(e));
   });
+};
+
+exports.fetchLookups = async () => {
+  let { data } = await Axios.get('http://localhost:5000/apis/lookups');
+  setCountries(data.data.countries || []);
+  setSectors(data.data.sectors || []);
+  appendSectorsToScreen();
+  appendCountriesToScreen();
 };

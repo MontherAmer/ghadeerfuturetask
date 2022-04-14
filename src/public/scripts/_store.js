@@ -6,32 +6,25 @@ exports.setSectors = (data) => localStorage.setItem('sectors', JSON.stringify(da
 
 exports.getSectors = () => JSON.parse(localStorage.getItem('sectors'));
 
+exports.setJobs = (data) => localStorage.setItem('jobs', JSON.stringify(data));
+
+exports.getJobs = () => JSON.parse(localStorage.getItem('jobs'));
+
 exports.setCities = () => {
   let countries = this.getCountries();
   let cities = [];
-  console.log(countries);
   countries.map((item) => {
     if (this.getFilters().country.includes(item.name)) {
       item.cities.map((city) => cities.push(city));
     }
   });
-  console.log('CCCCCCC ', cities);
   localStorage.setItem('cities', JSON.stringify(cities));
 };
 
 exports.getCities = () => JSON.parse(localStorage.getItem('cities'));
 
 exports.initFilters = () => {
-  localStorage.setItem(
-    'filters',
-    JSON.stringify({
-      page: 1,
-      title: '',
-      country: [],
-      city: [],
-      sector: [],
-    })
-  );
+  localStorage.setItem('filters', JSON.stringify({ page: 1, title: '', country: [], city: [], sector: [] }));
 };
 
 exports.setFilters = (name, value) => {
@@ -54,3 +47,8 @@ exports.setFilters = (name, value) => {
 };
 
 exports.getFilters = () => JSON.parse(localStorage.getItem('filters'));
+
+exports.getScreenWidth = () => {
+  let body = document.getElementsByTagName('body')[0];
+  return body.clientWidth;
+};

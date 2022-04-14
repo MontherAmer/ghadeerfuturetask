@@ -1,24 +1,20 @@
-const axios = require('axios');
+const { fetchLookups } = require('./_lookups');
 
-const { appendSectorsToScreen, appendCountriesToScreen } = require('./lookups');
-const { handlePaginateUI } = require('./pagination');
-const { processChange } = require('./search');
+const { processChange, getListOfJobs } = require('./_main');
 
-let { initFilters, setSectors, setCountries } = require('./store');
+let { initFilters } = require('./_store');
 
-// get countries, cities and sectors from backend
-const fetchLookups = async () => {
-  let { data } = await axios.get('http://localhost:5000/apis/lookups');
-  setCountries(data.data.countries || []);
-  setSectors(data.data.sectors || []);
-  appendSectorsToScreen();
-  appendCountriesToScreen();
-};
-
-window.onload = function () {
+window.onload = async function () {
   fetchLookups();
   initFilters();
-  handlePaginateUI(40, 1);
+  await getListOfJobs();
   let searchInput = document.getElementById('search-input');
   searchInput.addEventListener('keydown', (e) => processChange(e));
 };
+
+function reportWindowSize() {
+  let body = document.getElementsByTagName('body')[0];
+  console.log('ddddddd ', body.clientWidth);
+}
+
+window.onresize = reportWindowSize;

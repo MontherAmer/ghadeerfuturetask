@@ -2081,47 +2081,29 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],32:[function(require,module,exports){
-const axios = require('axios');
+const Axios = require('axios');
 
-const { appendSectorsToScreen, appendCountriesToScreen } = require('./lookups');
-const { handlePaginateUI } = require('./pagination');
-const { processChange } = require('./search');
-
-let { initFilters, setSectors, setCountries } = require('./store');
-
-// get countries, cities and sectors from backend
-const fetchLookups = async () => {
-  let { data } = await axios.get('http://localhost:5000/apis/lookups');
-  setCountries(data.data.countries || []);
-  setSectors(data.data.sectors || []);
-  appendSectorsToScreen();
-  appendCountriesToScreen();
-};
-
-window.onload = function () {
-  fetchLookups();
-  initFilters();
-  handlePaginateUI(40, 1);
-  let searchInput = document.getElementById('search-input');
-  searchInput.addEventListener('keydown', (e) => processChange(e));
-};
-
-},{"./lookups":33,"./pagination":34,"./search":35,"./store":36,"axios":1}],33:[function(require,module,exports){
-let { getCountries, getSectors, setFilters, setCities, getCities } = require('./store');
+const { getListOfJobs } = require('./_main');
+let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, setSectors } = require('./_store');
 
 const handleSectorChange = (e) => {
   setFilters('sector', e.target.name);
+  getListOfJobs();
 };
 
 const handleCountryChange = (e) => {
   setFilters('country', e.target.name);
   setCities();
-  this.appendCitiesToScreen();
+  appendCitiesToScreen();
+  getListOfJobs();
 };
 
-const handleCityChange = (e) => {};
+const handleCityChange = (e) => {
+  setFilters('city', e.target.name);
+  getListOfJobs();
+};
 
-exports.appendSectorsToScreen = () => {
+const appendSectorsToScreen = () => {
   let sectorsContainer = document.getElementById('sectors-container');
   let sectors = getSectors();
   sectors.map((item, i) => {
@@ -2139,7 +2121,7 @@ exports.appendSectorsToScreen = () => {
   });
 };
 
-exports.appendCountriesToScreen = () => {
+const appendCountriesToScreen = () => {
   let countriesContainer = document.getElementById('countries-container');
   let countries = getCountries();
 
@@ -2158,7 +2140,7 @@ exports.appendCountriesToScreen = () => {
   });
 };
 
-exports.appendCitiesToScreen = () => {
+const appendCitiesToScreen = () => {
   let citiesContainer = document.getElementById('cities-container');
   let cities = getCities();
   citiesContainer.innerHTML = '';
@@ -2177,28 +2159,51 @@ exports.appendCitiesToScreen = () => {
   });
 };
 
-},{"./store":36}],34:[function(require,module,exports){
-const { setFilters, getFilters } = require('./store');
+exports.fetchLookups = async () => {
+  let { data } = await Axios.get('http://localhost:5000/apis/lookups');
+  setCountries(data.data.countries || []);
+  setSectors(data.data.sectors || []);
+  appendSectorsToScreen();
+  appendCountriesToScreen();
+};
 
-// add color to active page
+},{"./_main":33,"./_store":34,"axios":1}],33:[function(require,module,exports){
+const Axios = require('axios');
+const { setFilters, getFilters, setJobs, getJobs } = require('./_store');
+
+const debounce = (func, timeout = 1000) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+};
+const handleSearchInput = (e) => {
+  let searchInput = e.target.value;
+  setFilters('title', searchInput);
+  this.getListOfJobs();
+};
+
 const changeActivePage = (prev, next) => {
-  console.log(prev);
   let prevPage = document.getElementById(`page${prev}`);
   let nextPage = document.getElementById(`page${next}`);
   prevPage.classList.remove('active');
   nextPage.classList.add('active');
 };
 
-// handle Click on page
 const handlePageChange = (e) => {
   let prev = getFilters().page;
   let next = e.target.innerHTML;
   changeActivePage(prev, next);
   setFilters('page', next);
+  this.getListOfJobs();
 };
 
 // display pagination on UI depends on total number of jobs
-exports.handlePaginateUI = (total, active) => {
+const handlePaginateUI = (active) => {
+  let total = getJobs().total;
   let pageDiv = document.querySelector('#paginate');
   pageDiv.innerHTML = '';
 
@@ -2218,31 +2223,45 @@ exports.handlePaginateUI = (total, active) => {
   });
 };
 
-},{"./store":36}],35:[function(require,module,exports){
-const { setFilters, getFilters } = require('./store');
+const appendCardToScreen = () => {
+  let cardsContainer = document.getElementById('cards-container');
+  let jobs = getJobs().list;
+  console.log('JJJJJJJJJJJ ', jobs);
+  jobs.map((item, i) => {
+    let newDiv = document.createElement('div');
 
-const debounce = (func, timeout = 1000) => {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(this, args);
-    }, timeout);
-  };
+    newDiv.innerHTML = `
+    <div class="card">
+      <img class="card-image" src="./images/download.png" />
+      <div class="description">
+        <p class="desc-title">${item.title}</p>
+        <p class="desc-loc">${item.city},${item.country}</p>
+        <p class="desc-sector">${item.sector}</p>
+        <p class="desc-desc">${item.description.slice(0, 100)}...</p>
+      </div>
+      <div class="actions">
+        <img class="action-icon" src="./images/eye.png" />
+        <img class="action-icon" src="./images/trash.png" />
+      </div>
+    </div>`;
+
+    cardsContainer.appendChild(newDiv);
+    // let job = document.getElementById(`job-${i}`);
+    // job.addEventListener('change', (e) => handleSectorChange(e));
+  });
 };
-const handleSearchInput = (e) => {
-  let searchInput = e.target.value;
-  setFilters('title', searchInput);
-  console.log('ppppppppppppppp', searchInput);
-};
+
 exports.processChange = debounce((e) => handleSearchInput(e));
 
-// window.onload = function () {
-//   let searchInput = document.getElementById('search-input');
-//   searchInput.addEventListener('keydown', (e) => processChange(e));
-// };
+exports.getListOfJobs = async () => {
+  let filters = getFilters();
+  let data = await Axios.get('http://localhost:5000/apis/jobs', { params: filters });
+  setJobs(data.data.data);
+  handlePaginateUI(1);
+  appendCardToScreen();
+};
 
-},{"./store":36}],36:[function(require,module,exports){
+},{"./_store":34,"axios":1}],34:[function(require,module,exports){
 exports.setCountries = (data) => localStorage.setItem('countries', JSON.stringify(data));
 
 exports.getCountries = () => JSON.parse(localStorage.getItem('countries'));
@@ -2251,32 +2270,25 @@ exports.setSectors = (data) => localStorage.setItem('sectors', JSON.stringify(da
 
 exports.getSectors = () => JSON.parse(localStorage.getItem('sectors'));
 
+exports.setJobs = (data) => localStorage.setItem('jobs', JSON.stringify(data));
+
+exports.getJobs = () => JSON.parse(localStorage.getItem('jobs'));
+
 exports.setCities = () => {
   let countries = this.getCountries();
   let cities = [];
-  console.log(countries);
   countries.map((item) => {
     if (this.getFilters().country.includes(item.name)) {
       item.cities.map((city) => cities.push(city));
     }
   });
-  console.log('CCCCCCC ', cities);
   localStorage.setItem('cities', JSON.stringify(cities));
 };
 
 exports.getCities = () => JSON.parse(localStorage.getItem('cities'));
 
 exports.initFilters = () => {
-  localStorage.setItem(
-    'filters',
-    JSON.stringify({
-      page: 1,
-      title: '',
-      country: [],
-      city: [],
-      sector: [],
-    })
-  );
+  localStorage.setItem('filters', JSON.stringify({ page: 1, title: '', country: [], city: [], sector: [] }));
 };
 
 exports.setFilters = (name, value) => {
@@ -2300,4 +2312,31 @@ exports.setFilters = (name, value) => {
 
 exports.getFilters = () => JSON.parse(localStorage.getItem('filters'));
 
-},{}]},{},[32]);
+exports.getScreenWidth = () => {
+  let body = document.getElementsByTagName('body')[0];
+  return body.clientWidth;
+};
+
+},{}],35:[function(require,module,exports){
+const { fetchLookups } = require('./_lookups');
+
+const { processChange, getListOfJobs } = require('./_main');
+
+let { initFilters } = require('./_store');
+
+window.onload = async function () {
+  fetchLookups();
+  initFilters();
+  await getListOfJobs();
+  let searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('keydown', (e) => processChange(e));
+};
+
+function reportWindowSize() {
+  let body = document.getElementsByTagName('body')[0];
+  console.log('ddddddd ', body.clientWidth);
+}
+
+window.onresize = reportWindowSize;
+
+},{"./_lookups":32,"./_main":33,"./_store":34}]},{},[35]);
