@@ -2226,7 +2226,6 @@ const handlePaginateUI = (active) => {
 const appendCardToScreen = () => {
   let cardsContainer = document.getElementById('cards-container');
   let jobs = getJobs().list;
-  console.log('JJJJJJJJJJJ ', jobs);
   jobs.map((item, i) => {
     let newDiv = document.createElement('div');
 
@@ -2235,7 +2234,7 @@ const appendCardToScreen = () => {
       <img class="card-image" src="./images/download.png" />
       <div class="description">
         <p class="desc-title">${item.title}</p>
-        <p class="desc-loc">${item.city},${item.country}</p>
+        <p class="desc-loc">${item.city}, ${item.country}</p>
         <p class="desc-sector">${item.sector}</p>
         <p class="desc-desc">${item.description.slice(0, 100)}...</p>
       </div>

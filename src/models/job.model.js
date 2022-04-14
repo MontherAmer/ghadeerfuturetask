@@ -7,6 +7,7 @@ const JobSchema = new mongoose.Schema(
     city: { type: String },
     sector: { type: String },
     description: { type: String },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,
