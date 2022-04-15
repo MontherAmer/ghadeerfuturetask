@@ -55,7 +55,7 @@ const handlePaginateUI = (active) => {
 
     newDiv.innerHTML = i + 1;
 
-    active === i + 1 ? newDiv.classList.add('page', 'active') : newDiv.classList.add('page');
+    parseInt(active) === i + 1 ? newDiv.classList.add('page', 'active') : newDiv.classList.add('page');
 
     newDiv.setAttribute('id', `page${i + 1}`);
 
@@ -101,11 +101,13 @@ const appendCardToScreen = () => {
 /* ---------------------------- get list of jobs ---------------------------- */
 const getListOfJobs = async () => {
   let filters = getFilters();
+  console.log('filters ', filters);
+
   toggleLoader();
   let data = await Axios.get('http://localhost:5000/apis/jobs', { params: filters });
   toggleLoader();
   setJobs(data.data.data);
-  handlePaginateUI(1);
+  handlePaginateUI(filters.page);
   appendCardToScreen();
 };
 

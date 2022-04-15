@@ -36,6 +36,7 @@ exports.setFilters = (name, value) => {
   if (Array.isArray(filters[name])) {
     if (filters[name].includes(value)) {
       filters[name] = filters[name].filter((item) => item != value);
+      if (name === 'country') filters['city'] = [];
     } else {
       let temp = filters[name];
       temp.push(value);

@@ -14,7 +14,7 @@ const descriptions = [
 ];
 
 const jobs = () => {
-  let arr = new Array(20).fill({});
+  let arr = new Array(53).fill({});
   return arr.map((item, i) => {
     let rand1 = Math.floor(Math.random() * 4);
     let rand2 = Math.floor(Math.random() * 2);

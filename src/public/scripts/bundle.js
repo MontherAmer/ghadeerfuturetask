@@ -2171,12 +2171,12 @@ const toggleDisplayCities = () => {
 
 /* ------------------------- filters change handlers ------------------------ */
 
-const handleSectorChange = (e) => (setFilters('sector', e.target.name), getListOfJobs());
+const handleSectorChange = (e) => (setFilters('sector', e.target.name), setFilters('page', 1), getListOfJobs());
 
-const handleCityChange = (e) => (setFilters('city', e.target.name), getListOfJobs());
+const handleCityChange = (e) => (setFilters('city', e.target.name), setFilters('page', 1), getListOfJobs());
 
 const handleCountryChange = (e) => (
-  setFilters('country', e.target.name), setCities(), appendCitiesToScreen(), getListOfJobs(), toggleDisplayCities()
+  setFilters('country', e.target.name), setFilters('page', 1), setCities(), appendCitiesToScreen(), getListOfJobs(), toggleDisplayCities()
 );
 
 /* ------------------------ display filters on screen ----------------------- */
@@ -2297,7 +2297,7 @@ const handlePaginateUI = (active) => {
 
     newDiv.innerHTML = i + 1;
 
-    active === i + 1 ? newDiv.classList.add('page', 'active') : newDiv.classList.add('page');
+    parseInt(active) === i + 1 ? newDiv.classList.add('page', 'active') : newDiv.classList.add('page');
 
     newDiv.setAttribute('id', `page${i + 1}`);
 
@@ -2343,11 +2343,13 @@ const appendCardToScreen = () => {
 /* ---------------------------- get list of jobs ---------------------------- */
 const getListOfJobs = async () => {
   let filters = getFilters();
+  console.log('filters ', filters);
+
   toggleLoader();
   let data = await Axios.get('http://localhost:5000/apis/jobs', { params: filters });
   toggleLoader();
   setJobs(data.data.data);
-  handlePaginateUI(1);
+  handlePaginateUI(filters.page);
   appendCardToScreen();
 };
 
@@ -2629,6 +2631,7 @@ exports.setFilters = (name, value) => {
   if (Array.isArray(filters[name])) {
     if (filters[name].includes(value)) {
       filters[name] = filters[name].filter((item) => item != value);
+      if (name === 'country') filters['city'] = [];
     } else {
       let temp = filters[name];
       temp.push(value);

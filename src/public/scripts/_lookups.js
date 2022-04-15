@@ -28,12 +28,12 @@ const toggleDisplayCities = () => {
 
 /* ------------------------- filters change handlers ------------------------ */
 
-const handleSectorChange = (e) => (setFilters('sector', e.target.name), getListOfJobs());
+const handleSectorChange = (e) => (setFilters('sector', e.target.name), setFilters('page', 1), getListOfJobs());
 
-const handleCityChange = (e) => (setFilters('city', e.target.name), getListOfJobs());
+const handleCityChange = (e) => (setFilters('city', e.target.name), setFilters('page', 1), getListOfJobs());
 
 const handleCountryChange = (e) => (
-  setFilters('country', e.target.name), setCities(), appendCitiesToScreen(), getListOfJobs(), toggleDisplayCities()
+  setFilters('country', e.target.name), setFilters('page', 1), setCities(), appendCitiesToScreen(), getListOfJobs(), toggleDisplayCities()
 );
 
 /* ------------------------ display filters on screen ----------------------- */
