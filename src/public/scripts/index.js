@@ -5,33 +5,23 @@ const { closeModal } = require('./_modal');
 
 let { initFilters } = require('./_store');
 
-window.addEventListener('load', function (){
-  fetchLookups();
-  initFilters();
-  await getListOfJobs();
-  let searchInput = document.getElementById('search-input');
-  searchInput.addEventListener('keydown', (e) => processChange(e));
+window.addEventListener(
+  'load',
+  async function () {
+    fetchLookups();
+    initFilters();
+    await getListOfJobs();
+    let searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('keydown', (e) => processChange(e));
 
-  let leftArrow = document.getElementById('bars-solid');
-  leftArrow.addEventListener('click', () => showSideBar());
+    let leftArrow = document.getElementById('bars-solid');
+    leftArrow.addEventListener('click', () => showSideBar());
 
-  let rightArrow = document.getElementById('times-solid');
-  rightArrow.addEventListener('click', () => hideSideBar());
-});
-
-// window.onload = async function () {
-//   fetchLookups();
-//   initFilters();
-//   await getListOfJobs();
-//   let searchInput = document.getElementById('search-input');
-//   searchInput.addEventListener('keydown', (e) => processChange(e));
-
-//   let leftArrow = document.getElementById('bars-solid');
-//   leftArrow.addEventListener('click', () => showSideBar());
-
-//   let rightArrow = document.getElementById('times-solid');
-//   rightArrow.addEventListener('click', () => hideSideBar());
-// };
+    let rightArrow = document.getElementById('times-solid');
+    rightArrow.addEventListener('click', () => hideSideBar());
+  },
+  false
+);
 
 const reportWindowSize = () => {
   let body = document.getElementsByTagName('body')[0];

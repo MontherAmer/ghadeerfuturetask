@@ -23,7 +23,7 @@
   "scripts": {
     "start": "node src/index.js",
     "start:dev2": "nodemon src/index.js",
-    "start:dev": "concurrently \"nodemon src/index.js\" \"watchify src/public/scripts/index.js -o src/public/scripts/bundle.js\"",
+    "start:dev": "concurrently \"nodemon src/index.js\" \" watchify src/public/scripts/index.js -o src/public/scripts/bundle.js\"",
     "build:front-end": "browserify src/public/scripts/index.js > src/public/scripts/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
