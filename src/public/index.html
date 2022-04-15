@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="./styles/checkbox.css" />
     <link rel="stylesheet" href="./styles/pagination.css" />
     <link rel="stylesheet" href="./styles/modal.css" />
+    <link rel="stylesheet" href="./styles/loader.css" />
     <title>Ghadeer Future</title>
   </head>
   <body>
@@ -27,7 +28,7 @@
             <h1>Country:</h1>
             <div id="countries-container"></div>
           </div>
-          <div class="filters-group">
+          <div class="filters-group" id="city-wrapper">
             <h1>City:</h1>
             <div id="cities-container"></div>
           </div>
@@ -59,6 +60,7 @@
         </div>
       </div>
     </div>
+      <!-- Details Modal section end -->
 
       <!-- Create Modal section start -->
       <div id="create-modal" class="modal">
@@ -74,6 +76,7 @@
         </div>
       </div>
     </div>
+      <!-- Create Modal section end -->
 
     <!-- Delete Modal section start -->
     <div id="delete-modal" class="modal">
@@ -89,8 +92,18 @@
       </div>
      </div>
     </div>
+    <!-- Delete Modal section end -->
 
-
+    <!-- loader start -->
+    <div id="loader-wrapper">
+      <div class="loader">
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
+      </div>
+      <div class="text">LOADING...</div>
+    </div>
+<!-- loader end -->
     <script src="./scripts/bundle.js"></script>
   </body>
 </html>

@@ -2081,18 +2081,27 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],32:[function(require,module,exports){
+exports.toggleLoader = () => {
+  let loader = document.getElementById('loader-wrapper');
+  let show = loader.style.display;
+  loader.style.display = show === 'block' ? 'none' : 'block';
+};
+
+},{}],33:[function(require,module,exports){
 /* -------------------------------------------------------------------------- */
 /*      funtions related to filters display and chagne handlers for them      */
 /* -------------------------------------------------------------------------- */
 
 const Axios = require('axios');
-
+const { toggleLoader } = require('./_loader');
 const { getListOfJobs } = require('./_main');
 let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, setSectors } = require('./_store');
 
 /* ---------------- main function to get lookups from backend --------------- */
 exports.fetchLookups = async () => {
+  toggleLoader();
   let { data } = await Axios.get('http://localhost:5000/apis/lookups');
+  toggleLoader();
   // store data in localstorage
   setCountries(data.data.countries || []);
   setSectors(data.data.sectors || []);
@@ -2101,13 +2110,22 @@ exports.fetchLookups = async () => {
   appendCountriesToScreen();
 };
 
+const toggleDisplayCities = () => {
+  let cities = getCities();
+  console.log('cities ', cities);
+  let cityWrapper = document.getElementById('city-wrapper');
+  cityWrapper.style.display = cities.length ? 'block' : 'none';
+};
+
 /* ------------------------- filters change handlers ------------------------ */
 
 const handleSectorChange = (e) => (setFilters('sector', e.target.name), getListOfJobs());
 
 const handleCityChange = (e) => (setFilters('city', e.target.name), getListOfJobs());
 
-const handleCountryChange = (e) => (setFilters('country', e.target.name), setCities(), appendCitiesToScreen(), getListOfJobs());
+const handleCountryChange = (e) => (
+  setFilters('country', e.target.name), setCities(), appendCitiesToScreen(), getListOfJobs(), toggleDisplayCities()
+);
 
 /* ------------------------ display filters on screen ----------------------- */
 const appendSectorsToScreen = () => {
@@ -2169,10 +2187,12 @@ const appendCitiesToScreen = () => {
   });
 };
 
-},{"./_main":33,"./_store":35,"axios":1}],33:[function(require,module,exports){
+},{"./_loader":32,"./_main":34,"./_store":36,"axios":1}],34:[function(require,module,exports){
 const Axios = require('axios');
-const { setFilters, getFilters, setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
+
+const { toggleLoader } = require('./_loader');
 const { showDetailsModal, showDeleteModal } = require('./_modal');
+const { setFilters, getFilters, setJobs, getJobs } = require('./_store');
 
 /* --------------------------- search bar handler --------------------------- */
 // fired after 1.5 seconds of stop typing
@@ -2271,7 +2291,9 @@ const appendCardToScreen = () => {
 /* ---------------------------- get list of jobs ---------------------------- */
 const getListOfJobs = async () => {
   let filters = getFilters();
+  toggleLoader();
   let data = await Axios.get('http://localhost:5000/apis/jobs', { params: filters });
+  toggleLoader();
   setJobs(data.data.data);
   handlePaginateUI(1);
   appendCardToScreen();
@@ -2296,18 +2318,21 @@ const hideSideBar = () => {
 
 module.exports = { showSideBar, hideSideBar, getListOfJobs, processChange };
 
-},{"./_modal":34,"./_store":35,"axios":1}],34:[function(require,module,exports){
+},{"./_loader":32,"./_modal":35,"./_store":36,"axios":1}],35:[function(require,module,exports){
 /* -------------------------------------------------------------------------- */
 /*             functions related to modals (create,delete,display)            */
 /* -------------------------------------------------------------------------- */
 
 const Axios = require('axios');
-const { setFilters, getFilters, setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
+const { toggleLoader } = require('./_loader');
+const { setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
 
 /* -------------------------- delete modal handlers -------------------------- */
 const submitDeleteJob = async () => {
   let id = getCurrentJob();
+  toggleLoader();
   await Axios.delete(`http://localhost:5000/apis/jobs/${id}`);
+  toggleLoader();
   let jobs = getJobs();
   jobs = { ...jobs, list: jobs.list.filter((job) => job._id !== id), total: jobs.total - 1 };
   setJobs(jobs);
@@ -2433,6 +2458,7 @@ const submitNewJob = async () => {
   let description = document.getElementById('c-description');
 
   if (title.value && sector.value && country.value && city.value) {
+    toggleLoader();
     let data = await Axios.post('http://localhost:5000/apis/jobs', {
       title: title.value,
       sector: sector.value,
@@ -2440,6 +2466,8 @@ const submitNewJob = async () => {
       city: city.value,
       description: description.value,
     });
+    toggleLoader();
+
     let jobsLength = getJobs().list.length;
     let cardsContainer = document.getElementById('cards-container');
     let newDiv = document.createElement('div');
@@ -2494,7 +2522,7 @@ const closeModal = (e) => {
 
 module.exports = { showDeleteModal, showDetailsModal, closeModal };
 
-},{"./_store":35,"axios":1}],35:[function(require,module,exports){
+},{"./_loader":32,"./_store":36,"axios":1}],36:[function(require,module,exports){
 exports.setCountries = (data) => localStorage.setItem('countries', JSON.stringify(data));
 
 exports.getCountries = () => JSON.parse(localStorage.getItem('countries'));
@@ -2556,7 +2584,7 @@ exports.setCurrentJob = (id) => localStorage.setItem('job-id', id);
 
 exports.getCurrentJob = () => localStorage.getItem('job-id');
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 const { fetchLookups } = require('./_lookups');
 
 const { processChange, getListOfJobs, showSideBar, hideSideBar } = require('./_main');
@@ -2586,4 +2614,4 @@ window.onresize = reportWindowSize;
 
 document.addEventListener('click', (e) => closeModal(e));
 
-},{"./_lookups":32,"./_main":33,"./_modal":34,"./_store":35}]},{},[36]);
+},{"./_lookups":33,"./_main":34,"./_modal":35,"./_store":36}]},{},[37]);

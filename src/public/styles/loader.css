@@ -1,0 +1,109 @@
+#loader-wrapper {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100px;
+  z-index: 90000;
+  /* background-color: cornflowerblue; */
+  top: 190px;
+}
+
+#loader-wrapper .text {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+  margin: 0 0 100px;
+  color: #2196f3;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-family: sans-serif, helvetica;
+  letter-spacing: 0.5px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 24px;
+  border-left: 8px solid #2196f3;
+  border-right: 8px solid #2196f3;
+  overflow: hidden;
+}
+
+.loader .ball {
+  height: 8px;
+  width: 0;
+  background: #2196f3;
+  position: relative;
+  margin: 0;
+}
+
+.loader .ball:nth-child(1) {
+  -webkit-animation: ball 2s ease-in-out infinite;
+  animation: ball 2s ease-in-out infinite;
+}
+
+.loader .ball:nth-child(2) {
+  -webkit-animation: ball 2s ease-in-out 0.1s infinite;
+  animation: ball 2s ease-in-out 0.1s infinite;
+}
+
+.loader .ball:nth-child(3) {
+  -webkit-animation: ball 2s ease-in-out 0.2s infinite;
+  animation: ball 2s ease-in-out 0.2s infinite;
+}
+
+@-webkit-keyframes ball {
+  0% {
+    left: 0;
+    width: 0px;
+  }
+  25% {
+    left: 0;
+    width: 300px;
+  }
+  50% {
+    left: 300px;
+    width: 0px;
+  }
+  75% {
+    left: 0;
+    width: 300px;
+  }
+  100% {
+    left: 0;
+    width: 0px;
+  }
+}
+
+@keyframes ball {
+  0% {
+    left: 0;
+    width: 0px;
+  }
+  25% {
+    left: 0;
+    width: 300px;
+  }
+  50% {
+    left: 300px;
+    width: 0px;
+  }
+  75% {
+    left: 0;
+    width: 300px;
+  }
+  100% {
+    left: 0;
+    width: 0px;
+  }
+}

@@ -1,6 +1,8 @@
 const Axios = require('axios');
-const { setFilters, getFilters, setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
+
+const { toggleLoader } = require('./_loader');
 const { showDetailsModal, showDeleteModal } = require('./_modal');
+const { setFilters, getFilters, setJobs, getJobs } = require('./_store');
 
 /* --------------------------- search bar handler --------------------------- */
 // fired after 1.5 seconds of stop typing
@@ -99,7 +101,9 @@ const appendCardToScreen = () => {
 /* ---------------------------- get list of jobs ---------------------------- */
 const getListOfJobs = async () => {
   let filters = getFilters();
+  toggleLoader();
   let data = await Axios.get('http://localhost:5000/apis/jobs', { params: filters });
+  toggleLoader();
   setJobs(data.data.data);
   handlePaginateUI(1);
   appendCardToScreen();

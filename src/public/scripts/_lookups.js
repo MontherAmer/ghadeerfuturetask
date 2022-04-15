@@ -3,13 +3,15 @@
 /* -------------------------------------------------------------------------- */
 
 const Axios = require('axios');
-
+const { toggleLoader } = require('./_loader');
 const { getListOfJobs } = require('./_main');
 let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, setSectors } = require('./_store');
 
 /* ---------------- main function to get lookups from backend --------------- */
 exports.fetchLookups = async () => {
+  toggleLoader();
   let { data } = await Axios.get('http://localhost:5000/apis/lookups');
+  toggleLoader();
   // store data in localstorage
   setCountries(data.data.countries || []);
   setSectors(data.data.sectors || []);
@@ -18,13 +20,22 @@ exports.fetchLookups = async () => {
   appendCountriesToScreen();
 };
 
+const toggleDisplayCities = () => {
+  let cities = getCities();
+  console.log('cities ', cities);
+  let cityWrapper = document.getElementById('city-wrapper');
+  cityWrapper.style.display = cities.length ? 'block' : 'none';
+};
+
 /* ------------------------- filters change handlers ------------------------ */
 
 const handleSectorChange = (e) => (setFilters('sector', e.target.name), getListOfJobs());
 
 const handleCityChange = (e) => (setFilters('city', e.target.name), getListOfJobs());
 
-const handleCountryChange = (e) => (setFilters('country', e.target.name), setCities(), appendCitiesToScreen(), getListOfJobs());
+const handleCountryChange = (e) => (
+  setFilters('country', e.target.name), setCities(), appendCitiesToScreen(), getListOfJobs(), toggleDisplayCities()
+);
 
 /* ------------------------ display filters on screen ----------------------- */
 const appendSectorsToScreen = () => {

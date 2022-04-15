@@ -3,12 +3,15 @@
 /* -------------------------------------------------------------------------- */
 
 const Axios = require('axios');
-const { setFilters, getFilters, setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
+const { toggleLoader } = require('./_loader');
+const { setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
 
 /* -------------------------- delete modal handlers -------------------------- */
 const submitDeleteJob = async () => {
   let id = getCurrentJob();
+  toggleLoader();
   await Axios.delete(`http://localhost:5000/apis/jobs/${id}`);
+  toggleLoader();
   let jobs = getJobs();
   jobs = { ...jobs, list: jobs.list.filter((job) => job._id !== id), total: jobs.total - 1 };
   setJobs(jobs);
@@ -134,6 +137,7 @@ const submitNewJob = async () => {
   let description = document.getElementById('c-description');
 
   if (title.value && sector.value && country.value && city.value) {
+    toggleLoader();
     let data = await Axios.post('http://localhost:5000/apis/jobs', {
       title: title.value,
       sector: sector.value,
@@ -141,6 +145,8 @@ const submitNewJob = async () => {
       city: city.value,
       description: description.value,
     });
+    toggleLoader();
+
     let jobsLength = getJobs().list.length;
     let cardsContainer = document.getElementById('cards-container');
     let newDiv = document.createElement('div');

@@ -159,6 +159,14 @@ input[type='text'] {
   display: none;
 }
 
+#city-wrapper {
+  display: none;
+}
+
+.filters-group > h1 {
+  font-size: 21px;
+}
+
 @media only screen and (max-width: 1024px) {
   .wrapper {
     padding: 24px 24px 8px 24px;
