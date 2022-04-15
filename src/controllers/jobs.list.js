@@ -2,7 +2,6 @@ const { Job } = require('../models');
 
 exports.listJobs = async (req, res) => {
   try {
-    console.log('req.query ', req.query);
     let { page = 1, title, country, city, sector } = req.query;
 
     let query = { isDeleted: false };

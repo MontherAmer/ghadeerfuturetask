@@ -33,13 +33,13 @@ body {
   height: 100%;
 }
 
-.container > div:nth-child(1) {
+#filters {
   margin-right: 24px;
   width: 23%;
   overflow-y: auto;
 }
 
-.container > div:nth-child(2) {
+#search-container {
   width: calc(77% - 24px);
   height: 100%;
 }
@@ -106,7 +106,7 @@ body {
   height: 58px;
 }
 
-.search-container > input[type='text'] {
+input[type='text'] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 4px;
@@ -146,6 +146,19 @@ body {
   background: #555;
 }
 
+#bars-solid {
+  display: none;
+  position: fixed;
+  width: 50px;
+  cursor: pointer;
+  top: 16px;
+  left: 3px;
+}
+
+#times-solid {
+  display: none;
+}
+
 @media only screen and (max-width: 1024px) {
   .wrapper {
     padding: 24px 24px 8px 24px;
@@ -153,15 +166,86 @@ body {
 }
 
 @media only screen and (max-width: 768px) {
-  .container > div:nth-child(1) {
+  #filters {
     width: 30%;
     margin-right: 8px;
   }
 
-  .container > div:nth-child(2) {
+  #search-container {
     width: calc(70% - 24px);
   }
   .description > p {
     margin: 0px 0px 4px;
+  }
+}
+
+@media only screen and (max-width: 425px) {
+  .wrapper {
+    padding: 12px 8px 8px 8px;
+  }
+
+  #filters {
+    display: block;
+    width: 100%;
+    position: fixed;
+    left: -311px;
+    top: 10px;
+    z-index: 400;
+    background: #fff;
+    transition: left 1s;
+    overflow-x: hidden;
+  }
+
+  #search-container {
+    width: 100%;
+  }
+
+  .search-container {
+    padding-left: 41px;
+  }
+
+  #search-container > button {
+    font-size: 12px;
+  }
+
+  .description > p {
+    margin: 0px 0px 4px;
+  }
+
+  #cards-container {
+    overflow-x: hidden;
+  }
+
+  .card {
+    flex-direction: column;
+    height: unset;
+    position: relative;
+  }
+
+  .actions {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+
+  .description > p {
+    margin: 4px 0px 0px;
+  }
+
+  .desc-desc {
+    width: 100%;
+  }
+
+  #bars-solid {
+    display: block;
+    z-index: 400;
+  }
+
+  #times-solid {
+    display: block;
+    left: 273px;
+    position: absolute;
+    top: 0px;
+    width: 34px;
   }
 }

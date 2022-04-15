@@ -4,7 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const cors = require('cors');
-
+const path = require('path');
 const apis = require('./router');
 
 const { insertDocumentsInDataBase } = require('./utils/fill-database');
@@ -25,8 +25,11 @@ db.once('open', () => {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/apis', apis);
+
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
 
 app.listen(process.env.PORT, () => {
   console.log(`App listening on port ${process.env.PORT}`);
