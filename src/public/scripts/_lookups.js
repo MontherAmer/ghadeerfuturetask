@@ -1,27 +1,36 @@
+/* -------------------------------------------------------------------------- */
+/*      funtions related to filters display and chagne handlers for them      */
+/* -------------------------------------------------------------------------- */
+
 const Axios = require('axios');
 
 const { getListOfJobs } = require('./_main');
 let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, setSectors } = require('./_store');
 
-const handleSectorChange = (e) => {
-  setFilters('sector', e.target.name);
-  getListOfJobs();
+/* ---------------- main function to get lookups from backend --------------- */
+exports.fetchLookups = async () => {
+  let { data } = await Axios.get('http://localhost:5000/apis/lookups');
+  // store data in localstorage
+  setCountries(data.data.countries || []);
+  setSectors(data.data.sectors || []);
+  // view filters in screen
+  appendSectorsToScreen();
+  appendCountriesToScreen();
 };
 
-const handleCountryChange = (e) => {
-  setFilters('country', e.target.name);
-  setCities();
-  appendCitiesToScreen();
-  getListOfJobs();
-};
+/* ------------------------- filters change handlers ------------------------ */
 
-const handleCityChange = (e) => {
-  setFilters('city', e.target.name);
-  getListOfJobs();
-};
+const handleSectorChange = (e) => (setFilters('sector', e.target.name), getListOfJobs());
 
+const handleCityChange = (e) => (setFilters('city', e.target.name), getListOfJobs());
+
+const handleCountryChange = (e) => (setFilters('country', e.target.name), setCities(), appendCitiesToScreen(), getListOfJobs());
+
+/* ------------------------ display filters on screen ----------------------- */
 const appendSectorsToScreen = () => {
   let sectorsContainer = document.getElementById('sectors-container');
+  sectorsContainer.innerHTML = '';
+
   let sectors = getSectors();
   sectors.map((item, i) => {
     let newDiv = document.createElement('div');
@@ -40,6 +49,7 @@ const appendSectorsToScreen = () => {
 
 const appendCountriesToScreen = () => {
   let countriesContainer = document.getElementById('countries-container');
+  countriesContainer.innerHTML = '';
   let countries = getCountries();
 
   countries.map((item, i) => {
@@ -74,12 +84,4 @@ const appendCitiesToScreen = () => {
     let cities = document.getElementById(`cities-${i}`);
     cities.addEventListener('change', (e) => handleCityChange(e));
   });
-};
-
-exports.fetchLookups = async () => {
-  let { data } = await Axios.get('http://localhost:5000/apis/lookups');
-  setCountries(data.data.countries || []);
-  setSectors(data.data.sectors || []);
-  appendSectorsToScreen();
-  appendCountriesToScreen();
 };

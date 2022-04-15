@@ -2081,30 +2081,39 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],32:[function(require,module,exports){
+/* -------------------------------------------------------------------------- */
+/*      funtions related to filters display and chagne handlers for them      */
+/* -------------------------------------------------------------------------- */
+
 const Axios = require('axios');
 
 const { getListOfJobs } = require('./_main');
 let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, setSectors } = require('./_store');
 
-const handleSectorChange = (e) => {
-  setFilters('sector', e.target.name);
-  getListOfJobs();
+/* ---------------- main function to get lookups from backend --------------- */
+exports.fetchLookups = async () => {
+  let { data } = await Axios.get('http://localhost:5000/apis/lookups');
+  // store data in localstorage
+  setCountries(data.data.countries || []);
+  setSectors(data.data.sectors || []);
+  // view filters in screen
+  appendSectorsToScreen();
+  appendCountriesToScreen();
 };
 
-const handleCountryChange = (e) => {
-  setFilters('country', e.target.name);
-  setCities();
-  appendCitiesToScreen();
-  getListOfJobs();
-};
+/* ------------------------- filters change handlers ------------------------ */
 
-const handleCityChange = (e) => {
-  setFilters('city', e.target.name);
-  getListOfJobs();
-};
+const handleSectorChange = (e) => (setFilters('sector', e.target.name), getListOfJobs());
 
+const handleCityChange = (e) => (setFilters('city', e.target.name), getListOfJobs());
+
+const handleCountryChange = (e) => (setFilters('country', e.target.name), setCities(), appendCitiesToScreen(), getListOfJobs());
+
+/* ------------------------ display filters on screen ----------------------- */
 const appendSectorsToScreen = () => {
   let sectorsContainer = document.getElementById('sectors-container');
+  sectorsContainer.innerHTML = '';
+
   let sectors = getSectors();
   sectors.map((item, i) => {
     let newDiv = document.createElement('div');
@@ -2123,6 +2132,7 @@ const appendSectorsToScreen = () => {
 
 const appendCountriesToScreen = () => {
   let countriesContainer = document.getElementById('countries-container');
+  countriesContainer.innerHTML = '';
   let countries = getCountries();
 
   countries.map((item, i) => {
@@ -2159,19 +2169,14 @@ const appendCitiesToScreen = () => {
   });
 };
 
-exports.fetchLookups = async () => {
-  let { data } = await Axios.get('http://localhost:5000/apis/lookups');
-  setCountries(data.data.countries || []);
-  setSectors(data.data.sectors || []);
-  appendSectorsToScreen();
-  appendCountriesToScreen();
-};
-
-},{"./_main":33,"./_store":34,"axios":1}],33:[function(require,module,exports){
+},{"./_main":33,"./_store":35,"axios":1}],33:[function(require,module,exports){
 const Axios = require('axios');
-const { setFilters, getFilters, setJobs, getJobs, setCurrentJob, getCurrentJob } = require('./_store');
+const { setFilters, getFilters, setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
+const { showDetailsModal, showDeleteModal } = require('./_modal');
 
-const debounce = (func, timeout = 1000) => {
+/* --------------------------- search bar handler --------------------------- */
+// fired after 1.5 seconds of stop typing
+const debounce = (func, timeout = 1500) => {
   let timer;
   return (...args) => {
     clearTimeout(timer);
@@ -2183,12 +2188,14 @@ const debounce = (func, timeout = 1000) => {
 const handleSearchInput = (e) => {
   let searchInput = e.target.value;
   setFilters('title', searchInput);
-  this.getListOfJobs();
+  getListOfJobs();
 };
 
-exports.processChange = debounce((e) => handleSearchInput(e));
+const processChange = debounce((e) => handleSearchInput(e));
 
+/* --------------------------- pagination handlers -------------------------- */
 const changeActivePage = (prev, next) => {
+  // will change the color of the active page icon
   let prevPage = document.getElementById(`page${prev}`);
   let nextPage = document.getElementById(`page${next}`);
   prevPage.classList.remove('active');
@@ -2196,11 +2203,13 @@ const changeActivePage = (prev, next) => {
 };
 
 const handlePageChange = (e) => {
+  // change the page value in filters
+  // then get list of pages depends on new value
   let prev = getFilters().page;
   let next = e.target.innerHTML;
   changeActivePage(prev, next);
   setFilters('page', next);
-  this.getListOfJobs();
+  getListOfJobs();
 };
 
 // display pagination on UI depends on total number of jobs
@@ -2225,6 +2234,9 @@ const handlePaginateUI = (active) => {
   });
 };
 
+/* -------------------------------------------------------------------------- */
+/*                      display cards on screen function                      */
+/* -------------------------------------------------------------------------- */
 const appendCardToScreen = () => {
   let cardsContainer = document.getElementById('cards-container');
   cardsContainer.innerHTML = '';
@@ -2233,7 +2245,7 @@ const appendCardToScreen = () => {
     let newDiv = document.createElement('div');
 
     newDiv.innerHTML = `
-    <div class="card">
+    <div class="card" id='${item._id}'>
       <img class="card-image" src="./images/download.png" />
       <div class="description">
         <p class="desc-title">${item.title}</p>
@@ -2247,6 +2259,7 @@ const appendCardToScreen = () => {
       </div>
     </div>`;
 
+    // add listners on delete and details images
     cardsContainer.appendChild(newDiv);
     let detailsIcon = document.getElementById(`details-icon-${i}`);
     detailsIcon.addEventListener('click', () => showDetailsModal(item));
@@ -2255,7 +2268,8 @@ const appendCardToScreen = () => {
   });
 };
 
-exports.getListOfJobs = async () => {
+/* ---------------------------- get list of jobs ---------------------------- */
+const getListOfJobs = async () => {
   let filters = getFilters();
   let data = await Axios.get('http://localhost:5000/apis/jobs', { params: filters });
   setJobs(data.data.data);
@@ -2263,14 +2277,43 @@ exports.getListOfJobs = async () => {
   appendCardToScreen();
 };
 
+/* ---------------------------- side bar handlers --------------------------- */
+const showSideBar = () => {
+  let filters = document.getElementById('filters');
+  filters.style.left = '0px';
+
+  let rightArrow = document.getElementById('bars-solid');
+  rightArrow.style.display = 'none';
+};
+
+const hideSideBar = () => {
+  let filters = document.getElementById('filters');
+  filters.style.left = '-311px';
+
+  let rightArrow = document.getElementById('bars-solid');
+  rightArrow.style.display = 'block';
+};
+
+module.exports = { showSideBar, hideSideBar, getListOfJobs, processChange };
+
+},{"./_modal":34,"./_store":35,"axios":1}],34:[function(require,module,exports){
+/* -------------------------------------------------------------------------- */
+/*             functions related to modals (create,delete,display)            */
+/* -------------------------------------------------------------------------- */
+
+const Axios = require('axios');
+const { setFilters, getFilters, setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
+
+/* -------------------------- delete modal handlers -------------------------- */
 const submitDeleteJob = async () => {
   let id = getCurrentJob();
   await Axios.delete(`http://localhost:5000/apis/jobs/${id}`);
   let jobs = getJobs();
   jobs = { ...jobs, list: jobs.list.filter((job) => job._id !== id), total: jobs.total - 1 };
   setJobs(jobs);
-  appendCardToScreen();
-  this.closeModal({ target: { id: 'delete-modal-close' } });
+  let card = document.getElementById(id);
+  card.style.display = 'none';
+  closeModal({ target: { id: 'delete-modal-close' } });
 };
 
 const showDeleteModal = (item) => {
@@ -2281,14 +2324,15 @@ const showDeleteModal = (item) => {
   let newDiv = document.createElement('div');
 
   newDiv.innerHTML = `
-  <p> Are you sure you want to delete <strong>${item.title}</strong> Job</p>
-  `;
+    <p> Are you sure you want to delete <strong>${item.title}</strong> Job</p>
+    `;
 
   modalBody.appendChild(newDiv);
 
   modal.style.display = 'block';
 };
 
+/* ------------------------- details modal handlers ------------------------- */
 const showDetailsModal = (item) => {
   let modal = document.getElementById('details-modal');
   let modalBody = document.getElementById('details-modal-body');
@@ -2296,27 +2340,140 @@ const showDetailsModal = (item) => {
   let newDiv = document.createElement('div');
 
   newDiv.innerHTML = `
-  <div class="modal-details-first-row">
-  <div>
-    <p> <strong>Job Title: </strong> ${item.title} </p>
-    <p> <strong>Job Sector: </strong> ${item.sector} </p>
-    <p> <strong>Job Location: </strong> ${item.city}, ${item.country} </p>
-    <p> 
-      <strong>Job Description: </strong>
-       ${item.description}
-    </p>
-  </div>
-  <div>
-    <img src="./images/download.png" />
-  </div>
-</div>`;
+    <div class="modal-details-first-row">
+    <div>
+      <p> <strong>Job Title: </strong> ${item.title} </p>
+      <p> <strong>Job Sector: </strong> ${item.sector} </p>
+      <p> <strong>Job Location: </strong> ${item.city}, ${item.country} </p>
+      <p> 
+        <strong>Job Description: </strong>
+         ${item.description}
+      </p>
+    </div>
+    <div>
+      <img src="./images/download.png" />
+    </div>
+  </div>`;
 
   modalBody.appendChild(newDiv);
 
   modal.style.display = 'block';
 };
 
-exports.closeModal = (e) => {
+/* -------------------------- create modal handlers ------------------------- */
+
+const handleCountryChange = (e) => {
+  // fires when change the country in select
+  // to update city select options
+  let countries = getCountries();
+  let cities = countries.filter((c) => c.name === e.target.value)[0].cities;
+  let citiesOptions = cities.map((item) => `<option value='${item}'>${item}</option>`);
+
+  let myDiv = document.getElementById('cities-options');
+  myDiv.innerHTML = '';
+  let newDiv = document.createElement('div');
+  newDiv.innerHTML = `
+      <select name="city" id='c-city'>
+        <option value="">City</option>
+        ${citiesOptions}
+      </select>
+    `;
+  myDiv.appendChild(newDiv);
+};
+
+const showCreateModal = () => {
+  let countries = getCountries();
+  let sectors = getSectors();
+  let modal = document.getElementById('create-modal');
+  let modalBody = document.getElementById('create-modal-body');
+  modalBody.innerHTML = '';
+  let newDiv = document.createElement('div');
+
+  let sectorOptions = sectors.map((item) => `<option value='${item.name}'>${item.name}</option>`);
+  let countryOptions = countries.map((item) => `<option value='${item.name}'>${item.name}</option>`);
+  newDiv.innerHTML = `
+          <div class="row">
+                <div> <input type="text" placeholder="Job Title *" id='c-title'/> </div>
+                <div>
+                  <select name="sector" id='c-sector'>
+                    <option value="">Sector *</option>
+                    ${sectorOptions}
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div>
+                  <select name="country" id='c-country'>
+                  <option value="">Country *</option>
+                  ${countryOptions}
+                  </select>
+                </div>
+                <div id='cities-options'>
+                  <select name="city" id='c-city'>
+                  <option value="">City *</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <textarea id="c-description" rows="4" placeholder="Description"></textarea>
+              </div>`;
+  modalBody.appendChild(newDiv);
+
+  modal.style.display = 'block';
+
+  let countrySelect = document.getElementById(`c-country`);
+  countrySelect.addEventListener('change', (e) => handleCountryChange(e));
+};
+
+const submitNewJob = async () => {
+  let title = document.getElementById('c-title');
+  let sector = document.getElementById('c-sector');
+  let country = document.getElementById('c-country');
+  let city = document.getElementById('c-city');
+  let description = document.getElementById('c-description');
+
+  if (title.value && sector.value && country.value && city.value) {
+    let data = await Axios.post('http://localhost:5000/apis/jobs', {
+      title: title.value,
+      sector: sector.value,
+      country: country.value,
+      city: city.value,
+      description: description.value,
+    });
+    let jobsLength = getJobs().list.length;
+    let cardsContainer = document.getElementById('cards-container');
+    let newDiv = document.createElement('div');
+    let item = data.data.data;
+    newDiv.innerHTML = `
+    <div class="card" id='${item._id}'>
+      <img class="card-image" src="./images/download.png" />
+      <div class="description">
+        <p class="desc-title">${item.title}</p>
+        <p class="desc-loc">${item.city}, ${item.country}</p>
+        <p class="desc-sector">${item.sector}</p>
+        <p class="desc-desc">${item.description.slice(0, 100)}...</p>
+      </div>
+      <div class="actions">
+        <img class="action-icon" src="./images/eye.png" id='details-icon-${jobsLength + 1}'/>
+        <img class="action-icon" src="./images/trash.png" id='delete-icon-${jobsLength + 1}'/>
+      </div>
+    </div>`;
+
+    cardsContainer.prepend(newDiv);
+    let detailsIcon = document.getElementById(`details-icon-${jobsLength + 1}`);
+    detailsIcon.addEventListener('click', () => showDetailsModal(item));
+    let deleteIcon = document.getElementById(`delete-icon-${jobsLength + 1}`);
+    deleteIcon.addEventListener('click', () => showDeleteModal(item));
+    closeModal({ target: { id: 'create-modal-close' } });
+  } else {
+    alert('Please fill all required data');
+  }
+};
+
+/* -------------------------- close modals handler -------------------------- */
+const closeModal = (e) => {
+  // handle click on close modal button and click on outside modal
+  // also fired when click on add new job button
   let modals = ['details-modal', 'create-modal', 'delete-modal'];
   let modalsClose = ['details-modal-close', 'create-modal-close', 'delete-modal-close'];
 
@@ -2331,9 +2488,13 @@ exports.closeModal = (e) => {
   }
 
   if (e.target.id === 'delete-modal-submit') submitDeleteJob();
+  if (e.target.id === 'show-create-modal') showCreateModal();
+  if (e.target.id === 'submit-new-job') submitNewJob();
 };
 
-},{"./_store":34,"axios":1}],34:[function(require,module,exports){
+module.exports = { showDeleteModal, showDetailsModal, closeModal };
+
+},{"./_store":35,"axios":1}],35:[function(require,module,exports){
 exports.setCountries = (data) => localStorage.setItem('countries', JSON.stringify(data));
 
 exports.getCountries = () => JSON.parse(localStorage.getItem('countries'));
@@ -2364,6 +2525,8 @@ exports.initFilters = () => {
 };
 
 exports.setFilters = (name, value) => {
+  // recive filter name which is the key of the object filter
+  // and value which is the value
   let filters = JSON.parse(localStorage.getItem('filters'));
 
   // handle sector, country and city
@@ -2393,10 +2556,11 @@ exports.setCurrentJob = (id) => localStorage.setItem('job-id', id);
 
 exports.getCurrentJob = () => localStorage.getItem('job-id');
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 const { fetchLookups } = require('./_lookups');
 
-const { processChange, getListOfJobs, closeModal } = require('./_main');
+const { processChange, getListOfJobs, showSideBar, hideSideBar } = require('./_main');
+const { closeModal } = require('./_modal');
 
 let { initFilters } = require('./_store');
 
@@ -2406,17 +2570,20 @@ window.onload = async function () {
   await getListOfJobs();
   let searchInput = document.getElementById('search-input');
   searchInput.addEventListener('keydown', (e) => processChange(e));
+
+  let leftArrow = document.getElementById('bars-solid');
+  leftArrow.addEventListener('click', () => showSideBar());
+
+  let rightArrow = document.getElementById('times-solid');
+  rightArrow.addEventListener('click', () => hideSideBar());
 };
 
 const reportWindowSize = () => {
   let body = document.getElementsByTagName('body')[0];
-  console.log('ddddddd ', body.clientWidth);
 };
 
 window.onresize = reportWindowSize;
 
-window.onclick = (e) => closeModal(e);
-// details-modal-close
 document.addEventListener('click', (e) => closeModal(e));
 
-},{"./_lookups":32,"./_main":33,"./_store":34}]},{},[35]);
+},{"./_lookups":32,"./_main":33,"./_modal":34,"./_store":35}]},{},[36]);

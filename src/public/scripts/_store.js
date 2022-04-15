@@ -28,6 +28,8 @@ exports.initFilters = () => {
 };
 
 exports.setFilters = (name, value) => {
+  // recive filter name which is the key of the object filter
+  // and value which is the value
   let filters = JSON.parse(localStorage.getItem('filters'));
 
   // handle sector, country and city
