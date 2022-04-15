@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 const Axios = require('axios');
-const { toggleLoader } = require('./_loader');
+const { toggleLoader } = require('./_helpers');
 const { getListOfJobs } = require('./_main');
 let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, setSectors } = require('./_store');
 
@@ -22,7 +22,6 @@ exports.fetchLookups = async () => {
 
 const toggleDisplayCities = () => {
   let cities = getCities();
-  console.log('cities ', cities);
   let cityWrapper = document.getElementById('city-wrapper');
   cityWrapper.style.display = cities.length ? 'block' : 'none';
 };

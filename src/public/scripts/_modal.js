@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 const Axios = require('axios');
-const { toggleLoader } = require('./_loader');
+const { toggleLoader, checkValidForm, handleInputChange } = require('./_helpers');
 const { setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
 
 /* -------------------------- delete modal handlers -------------------------- */
@@ -81,8 +81,12 @@ const handleCountryChange = (e) => {
         <option value="">City</option>
         ${citiesOptions}
       </select>
+      <small id="e-city">City is required</small>
     `;
   myDiv.appendChild(newDiv);
+  document.getElementById('c-city').addEventListener('change', () => handleInputChange());
+
+  checkValidForm();
 };
 
 const showCreateModal = () => {
@@ -97,12 +101,16 @@ const showCreateModal = () => {
   let countryOptions = countries.map((item) => `<option value='${item.name}'>${item.name}</option>`);
   newDiv.innerHTML = `
           <div class="row">
-                <div> <input type="text" placeholder="Job Title *" id='c-title'/> </div>
+                <div> 
+                  <input type="text" placeholder="Job Title *" id='c-title'/> 
+                  <small id="e-title">Title is required</small>
+                </div>
                 <div>
                   <select name="sector" id='c-sector'>
                     <option value="">Sector *</option>
                     ${sectorOptions}
                   </select>
+                  <small id="e-sector">Sector is required</small>
                 </div>
               </div>
               <div class="row">
@@ -111,19 +119,30 @@ const showCreateModal = () => {
                   <option value="">Country *</option>
                   ${countryOptions}
                   </select>
+                  <small id="e-country">Country is required</small>
                 </div>
                 <div id='cities-options'>
                   <select name="city" id='c-city'>
                   <option value="">City *</option>
                   </select>
+                  <small id="e-city">City is required</small>
                 </div>
               </div>
               <div class="row">
+              <div style="width:100%">
                 <textarea id="c-description" rows="4" placeholder="Description"></textarea>
+                <small id="e-description">Description is required</small>
+              </div>
+
               </div>`;
   modalBody.appendChild(newDiv);
 
   modal.style.display = 'block';
+
+  document.getElementById('c-title').addEventListener('keydown', () => handleInputChange());
+  document.getElementById('c-sector').addEventListener('change', () => handleInputChange());
+  document.getElementById('c-city').addEventListener('change', () => handleInputChange());
+  document.getElementById('c-description').addEventListener('keydown', () => handleInputChange());
 
   let countrySelect = document.getElementById(`c-country`);
   countrySelect.addEventListener('change', (e) => handleCountryChange(e));
@@ -135,8 +154,7 @@ const submitNewJob = async () => {
   let country = document.getElementById('c-country');
   let city = document.getElementById('c-city');
   let description = document.getElementById('c-description');
-
-  if (title.value && sector.value && country.value && city.value) {
+  if (checkValidForm(true)) {
     toggleLoader();
     let data = await Axios.post('http://localhost:5000/apis/jobs', {
       title: title.value,
@@ -172,8 +190,6 @@ const submitNewJob = async () => {
     let deleteIcon = document.getElementById(`delete-icon-${jobsLength + 1}`);
     deleteIcon.addEventListener('click', () => showDeleteModal(item));
     closeModal({ target: { id: 'create-modal-close' } });
-  } else {
-    alert('Please fill all required data');
   }
 };
 

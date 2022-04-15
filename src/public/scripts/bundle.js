@@ -2087,13 +2087,66 @@ exports.toggleLoader = () => {
   loader.style.display = show === 'block' ? 'none' : 'block';
 };
 
+exports.checkValidForm = (firstSubmit) => {
+  let title = document.getElementById('c-title').value;
+  let sector = document.getElementById('c-sector').value;
+  let country = document.getElementById('c-country').value;
+  let city = document.getElementById('c-city').value;
+  let description = document.getElementById('c-description').value;
+
+  let valid = true;
+  if (firstSubmit && !title) {
+    etitle = document.getElementById('e-title');
+    etitle.style.display = 'block';
+    valid = false;
+  } else {
+    etitle = document.getElementById('e-title');
+    etitle.style.display = 'none';
+  }
+  if (firstSubmit && !sector) {
+    esector = document.getElementById('e-sector');
+    esector.style.display = 'block';
+    valid = false;
+  } else {
+    esector = document.getElementById('e-sector');
+    esector.style.display = 'none';
+  }
+  if (firstSubmit && !country) {
+    ecountry = document.getElementById('e-country');
+    ecountry.style.display = 'block';
+    valid = false;
+  } else {
+    ecountry = document.getElementById('e-country');
+    ecountry.style.display = 'none';
+  }
+  if (firstSubmit && !city) {
+    ecity = document.getElementById('e-city');
+    ecity.style.display = 'block';
+    valid = false;
+  } else {
+    ecity = document.getElementById('e-city');
+    if (ecity) ecity.style.display = 'none';
+  }
+  if (firstSubmit && !description) {
+    edescription = document.getElementById('e-description');
+    edescription.style.display = 'block';
+    valid = false;
+  } else {
+    edescription = document.getElementById('e-description');
+    edescription.style.display = 'none';
+  }
+  return valid;
+};
+
+exports.handleInputChange = () => this.checkValidForm();
+
 },{}],33:[function(require,module,exports){
 /* -------------------------------------------------------------------------- */
 /*      funtions related to filters display and chagne handlers for them      */
 /* -------------------------------------------------------------------------- */
 
 const Axios = require('axios');
-const { toggleLoader } = require('./_loader');
+const { toggleLoader } = require('./_helpers');
 const { getListOfJobs } = require('./_main');
 let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, setSectors } = require('./_store');
 
@@ -2112,7 +2165,6 @@ exports.fetchLookups = async () => {
 
 const toggleDisplayCities = () => {
   let cities = getCities();
-  console.log('cities ', cities);
   let cityWrapper = document.getElementById('city-wrapper');
   cityWrapper.style.display = cities.length ? 'block' : 'none';
 };
@@ -2187,10 +2239,10 @@ const appendCitiesToScreen = () => {
   });
 };
 
-},{"./_loader":32,"./_main":34,"./_store":36,"axios":1}],34:[function(require,module,exports){
+},{"./_helpers":32,"./_main":34,"./_store":36,"axios":1}],34:[function(require,module,exports){
 const Axios = require('axios');
 
-const { toggleLoader } = require('./_loader');
+const { toggleLoader } = require('./_helpers');
 const { showDetailsModal, showDeleteModal } = require('./_modal');
 const { setFilters, getFilters, setJobs, getJobs } = require('./_store');
 
@@ -2318,13 +2370,13 @@ const hideSideBar = () => {
 
 module.exports = { showSideBar, hideSideBar, getListOfJobs, processChange };
 
-},{"./_loader":32,"./_modal":35,"./_store":36,"axios":1}],35:[function(require,module,exports){
+},{"./_helpers":32,"./_modal":35,"./_store":36,"axios":1}],35:[function(require,module,exports){
 /* -------------------------------------------------------------------------- */
 /*             functions related to modals (create,delete,display)            */
 /* -------------------------------------------------------------------------- */
 
 const Axios = require('axios');
-const { toggleLoader } = require('./_loader');
+const { toggleLoader, checkValidForm, handleInputChange } = require('./_helpers');
 const { setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors } = require('./_store');
 
 /* -------------------------- delete modal handlers -------------------------- */
@@ -2402,8 +2454,12 @@ const handleCountryChange = (e) => {
         <option value="">City</option>
         ${citiesOptions}
       </select>
+      <small id="e-city">City is required</small>
     `;
   myDiv.appendChild(newDiv);
+  document.getElementById('c-city').addEventListener('change', () => handleInputChange());
+
+  checkValidForm();
 };
 
 const showCreateModal = () => {
@@ -2418,12 +2474,16 @@ const showCreateModal = () => {
   let countryOptions = countries.map((item) => `<option value='${item.name}'>${item.name}</option>`);
   newDiv.innerHTML = `
           <div class="row">
-                <div> <input type="text" placeholder="Job Title *" id='c-title'/> </div>
+                <div> 
+                  <input type="text" placeholder="Job Title *" id='c-title'/> 
+                  <small id="e-title">Title is required</small>
+                </div>
                 <div>
                   <select name="sector" id='c-sector'>
                     <option value="">Sector *</option>
                     ${sectorOptions}
                   </select>
+                  <small id="e-sector">Sector is required</small>
                 </div>
               </div>
               <div class="row">
@@ -2432,19 +2492,30 @@ const showCreateModal = () => {
                   <option value="">Country *</option>
                   ${countryOptions}
                   </select>
+                  <small id="e-country">Country is required</small>
                 </div>
                 <div id='cities-options'>
                   <select name="city" id='c-city'>
                   <option value="">City *</option>
                   </select>
+                  <small id="e-city">City is required</small>
                 </div>
               </div>
               <div class="row">
+              <div style="width:100%">
                 <textarea id="c-description" rows="4" placeholder="Description"></textarea>
+                <small id="e-description">Description is required</small>
+              </div>
+
               </div>`;
   modalBody.appendChild(newDiv);
 
   modal.style.display = 'block';
+
+  document.getElementById('c-title').addEventListener('keydown', () => handleInputChange());
+  document.getElementById('c-sector').addEventListener('change', () => handleInputChange());
+  document.getElementById('c-city').addEventListener('change', () => handleInputChange());
+  document.getElementById('c-description').addEventListener('keydown', () => handleInputChange());
 
   let countrySelect = document.getElementById(`c-country`);
   countrySelect.addEventListener('change', (e) => handleCountryChange(e));
@@ -2456,8 +2527,7 @@ const submitNewJob = async () => {
   let country = document.getElementById('c-country');
   let city = document.getElementById('c-city');
   let description = document.getElementById('c-description');
-
-  if (title.value && sector.value && country.value && city.value) {
+  if (checkValidForm(true)) {
     toggleLoader();
     let data = await Axios.post('http://localhost:5000/apis/jobs', {
       title: title.value,
@@ -2493,8 +2563,6 @@ const submitNewJob = async () => {
     let deleteIcon = document.getElementById(`delete-icon-${jobsLength + 1}`);
     deleteIcon.addEventListener('click', () => showDeleteModal(item));
     closeModal({ target: { id: 'create-modal-close' } });
-  } else {
-    alert('Please fill all required data');
   }
 };
 
@@ -2522,7 +2590,7 @@ const closeModal = (e) => {
 
 module.exports = { showDeleteModal, showDetailsModal, closeModal };
 
-},{"./_loader":32,"./_store":36,"axios":1}],36:[function(require,module,exports){
+},{"./_helpers":32,"./_store":36,"axios":1}],36:[function(require,module,exports){
 exports.setCountries = (data) => localStorage.setItem('countries', JSON.stringify(data));
 
 exports.getCountries = () => JSON.parse(localStorage.getItem('countries'));

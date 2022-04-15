@@ -135,6 +135,15 @@ textarea {
   background: #fff;
 }
 
+#e-title,
+#e-sector,
+#e-country,
+#e-city,
+#e-description {
+  color: #ff0000;
+  display: none;
+}
+
 @media only screen and (max-width: 425px) {
   .modal-details-first-row {
     flex-direction: column-reverse;

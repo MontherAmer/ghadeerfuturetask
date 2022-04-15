@@ -1,6 +1,6 @@
 const Axios = require('axios');
 
-const { toggleLoader } = require('./_loader');
+const { toggleLoader } = require('./_helpers');
 const { showDetailsModal, showDeleteModal } = require('./_modal');
 const { setFilters, getFilters, setJobs, getJobs } = require('./_store');
 
