@@ -5,28 +5,18 @@ const { closeModal } = require('./_modal');
 
 let { initFilters } = require('./_store');
 
-window.addEventListener(
-  'load',
-  async function () {
-    fetchLookups();
-    initFilters();
-    await getListOfJobs();
-    let searchInput = document.getElementById('search-input');
-    searchInput.addEventListener('keydown', (e) => processChange(e));
+document.addEventListener('DOMContentLoaded', function () {
+  fetchLookups();
+  initFilters();
+  getListOfJobs();
+  let searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('keydown', (e) => processChange(e));
 
-    let leftArrow = document.getElementById('bars-solid');
-    leftArrow.addEventListener('click', () => showSideBar());
+  let leftArrow = document.getElementById('bars-solid');
+  leftArrow.addEventListener('click', () => showSideBar());
 
-    let rightArrow = document.getElementById('times-solid');
-    rightArrow.addEventListener('click', () => hideSideBar());
-  },
-  false
-);
-
-const reportWindowSize = () => {
-  let body = document.getElementsByTagName('body')[0];
-};
-
-window.onresize = reportWindowSize;
+  let rightArrow = document.getElementById('times-solid');
+  rightArrow.addEventListener('click', () => hideSideBar());
+});
 
 document.addEventListener('click', (e) => closeModal(e));
