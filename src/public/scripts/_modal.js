@@ -10,7 +10,7 @@ const { setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors
 const submitDeleteJob = async () => {
   let id = getCurrentJob();
   toggleLoader();
-  await Axios.delete(`http://localhost:5000/apis/jobs/${id}`);
+  await Axios.delete(`/apis/jobs/${id}`);
   toggleLoader();
   let jobs = getJobs();
   jobs = { ...jobs, list: jobs.list.filter((job) => job._id !== id), total: jobs.total - 1 };
@@ -156,7 +156,7 @@ const submitNewJob = async () => {
   let description = document.getElementById('c-description');
   if (checkValidForm(true)) {
     toggleLoader();
-    let data = await Axios.post('http://localhost:5000/apis/jobs', {
+    let data = await Axios.post('/apis/jobs', {
       title: title.value,
       sector: sector.value,
       country: country.value,

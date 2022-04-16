@@ -2153,7 +2153,7 @@ let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, 
 /* ---------------- main function to get lookups from backend --------------- */
 exports.fetchLookups = async () => {
   toggleLoader();
-  let { data } = await Axios.get('http://localhost:5000/apis/lookups');
+  let { data } = await Axios.get('/apis/lookups');
   toggleLoader();
   // store data in localstorage
   setCountries(data.data.countries || []);
@@ -2346,7 +2346,7 @@ const getListOfJobs = async () => {
   console.log('filters ', filters);
 
   toggleLoader();
-  let data = await Axios.get('http://localhost:5000/apis/jobs', { params: filters });
+  let data = await Axios.get('/apis/jobs', { params: filters });
   toggleLoader();
   setJobs(data.data.data);
   handlePaginateUI(filters.page);
@@ -2385,7 +2385,7 @@ const { setJobs, getJobs, setCurrentJob, getCurrentJob, getCountries, getSectors
 const submitDeleteJob = async () => {
   let id = getCurrentJob();
   toggleLoader();
-  await Axios.delete(`http://localhost:5000/apis/jobs/${id}`);
+  await Axios.delete(`/apis/jobs/${id}`);
   toggleLoader();
   let jobs = getJobs();
   jobs = { ...jobs, list: jobs.list.filter((job) => job._id !== id), total: jobs.total - 1 };
@@ -2531,7 +2531,7 @@ const submitNewJob = async () => {
   let description = document.getElementById('c-description');
   if (checkValidForm(true)) {
     toggleLoader();
-    let data = await Axios.post('http://localhost:5000/apis/jobs', {
+    let data = await Axios.post('/apis/jobs', {
       title: title.value,
       sector: sector.value,
       country: country.value,

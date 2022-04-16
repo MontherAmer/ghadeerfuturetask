@@ -10,7 +10,7 @@ let { getCountries, getSectors, setFilters, setCities, getCities, setCountries, 
 /* ---------------- main function to get lookups from backend --------------- */
 exports.fetchLookups = async () => {
   toggleLoader();
-  let { data } = await Axios.get('http://localhost:5000/apis/lookups');
+  let { data } = await Axios.get('/apis/lookups');
   toggleLoader();
   // store data in localstorage
   setCountries(data.data.countries || []);

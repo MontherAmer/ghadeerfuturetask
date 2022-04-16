@@ -104,7 +104,7 @@ const getListOfJobs = async () => {
   console.log('filters ', filters);
 
   toggleLoader();
-  let data = await Axios.get('http://localhost:5000/apis/jobs', { params: filters });
+  let data = await Axios.get('/apis/jobs', { params: filters });
   toggleLoader();
   setJobs(data.data.data);
   handlePaginateUI(filters.page);
